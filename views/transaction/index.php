@@ -62,29 +62,13 @@ $this->params['breadcrumbs'][] = $this->title;
 		],
 		'floatHeader' => true,		
     
-        //'mergeColumns' => ['time','title','subject','tags','transactionRemarks'],
-        //'type'=>'firstrow',        
+        'mergeColumns' => ['type','subject','title','tags'],
+        'type'=>'firstrow',        
+        
         'columns' => [
             ['class' => 'kartik\grid\SerialColumn'],
 
-            [				
-				'attribute' => 'time',
-				'value' => 'time',				
-				'filterType'=>GridView::FILTER_DATE_RANGE,
-				'filterWidgetOptions'=>[
-					'pluginOptions' => [
-						'format' => 'YYYY-MM-DD HH:mm:ss',				
-						'todayHighlight' => true,
-						'timePicker'=>true,
-						'timePickerIncrement'=>15,
-					],
-					'pluginEvents' => [
-					"apply.daterangepicker" => 'function() {									
-									$(this).change();
-								}',
-					],			
-				],
-			],            
+                   
             [				
 				'attribute'=>'type',				
 				'value'=>function($data){										
@@ -99,11 +83,30 @@ $this->params['breadcrumbs'][] = $this->title;
 					],
 					
 				],
-            ],
-            'reference',
+            ],            
             'subject',
             'title',
             'tags',
+             [				
+				'attribute' => 'time',
+				'value' => 'time',				
+				'filterType'=>GridView::FILTER_DATE_RANGE,
+				'filterWidgetOptions'=>[
+					'pluginOptions' => [
+						'format' => 'YYYY-MM-DD HH:mm:ss',				
+						'todayHighlight' => true,
+						'timePicker'=>true,
+						'timePickerIncrement'=>15,
+						'opens'=>'left'
+					],
+					'pluginEvents' => [
+					"apply.daterangepicker" => 'function() {									
+									$(this).change();
+								}',
+					],			
+				],
+			],    
+            'reference',
             'remarks:ntext',            
             [				
 				'attribute' => 'total',				

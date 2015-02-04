@@ -30,6 +30,7 @@ class Account extends Component
 					<ul id="account-codes-'.$account->id.'" class="nav collapse">';
 		*/
 		
+		$value = 0;			
 		$value = $account->saldo;			
 		if ($account->increaseon == 0) {
 		//	$value = $account->debet;			
