@@ -31,7 +31,66 @@ class TransactionSearch extends Transaction
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
-
+	
+	private function queryNumber($fields)
+	{		
+		$params = [];
+		foreach ($fields as $afield)
+		{
+			$field = $afield[0];
+			$tab = isset($afield[1])?$afield[1]:false;			
+			if (!empty($this->$field))
+			{				
+				$number = explode(" ",$this->$field);			
+				if (count($number) == 2)
+				{									
+					array_push($params,[$number[0], ($tab?$tab.".":"").$field, $number[1]]);	
+				}
+				elseif (count($number) > 2)
+				{															
+					array_push($params,['>=', ($tab?$tab.".":"").$field, $number[0]]);		
+					array_push($params,['<=', ($tab?$tab.".":"").$field, $number[0]]);		
+				}
+				else
+				{					
+					array_push($params,['=', ($tab?$tab.".":"").$field, str_replace(["<",">","="],"",$number[0])]);		
+				}									
+			}
+		}	
+		return $params;
+	}
+	
+	private function queryTime($fields)
+	{		
+		$params = [];
+		foreach ($fields as $afield)
+		{
+			$field = $afield[0];
+			$tab = isset($afield[1])?$afield[1]:false;			
+			if (!empty($this->$field))
+			{				
+				$time = explode(" - ",$this->$field);			
+				if (count($time) > 1)
+				{								
+					array_push($params,['>=', "concat('',".($tab?$tab.".":"").$field.")", $time[0]]);	
+					array_push($params,['<=', "concat('',".($tab?$tab.".":"").$field.")", $time[1]." 24:00:00"]);
+				}
+				else
+				{
+					if (substr($time[0],0,2) == "< " || substr($time[0],0,2) == "> " || substr($time[0],0,2) == "<=" || substr($time[0],0,2) == ">=") 
+					{					
+						array_push($params,[str_replace(" ","",substr($time[0],0,2)), "concat('',".($tab?$tab.".":"").$field.")", trim(substr($time[0],2))]);
+					}
+					else
+					{					
+						array_push($params,['like', "concat('',".($tab?$tab.".":"").$field.")", $time[0]]);
+					}
+				}	
+			}
+		}	
+		return $params;
+	}
+	
     /**
      * Creates data provider instance with search query applied
      *
@@ -57,53 +116,27 @@ class TransactionSearch extends Transaction
             'isdel' => $this->isdel,
         ]);
         
-        if (!empty($this->total))
+        
+        $params = self::queryNumber([['total']]);		
+		foreach ($params as	$p)
 		{
-			
-			$total = explode(" ",$this->total);			
-			if (count($total) == 2)
-			{				
-				$query->andFilterWhere([$total[0], "total", $total[1]]);					
-			}
-			elseif (count($total) > 2)
-			{				
-				$query->andFilterWhere(['>=', "total", $total[0]])
-					->andFilterWhere(['<=', "total", $total[2]]);
-			}
-			else
-			{
-				$query->andFilterWhere(['=', "total", str_replace(["<",">","="],"",$total[0])]);	
-			}	
+			$query->andFilterWhere($p);
+		}	
+		
+        $params = self::queryTime([['time']]);		
+		foreach ($params as	$p)
+		{
+			$query->andFilterWhere($p);
 		}	
         
-        if (!empty($this->time))
+        $params = self::queryTime([['subject'],['title'],['reference'],['tags'],['remarks']]);		
+		foreach ($params as	$p)
 		{
-			
-			$time = explode(" - ",$this->time);			
-			if (count($time) > 1)
-			{				
-				$query->andFilterWhere(['>=', "concat('',time)", $time[0]])
-					->andFilterWhere(['<=', "concat('',time)", $time[1]." 24:00:00"]);
-			}
-			else
-			{
-				if (substr($time[0],0,2) == "< " || substr($time[0],0,2) == "> " || substr($time[0],0,2) == "<=" || substr($time[0],0,2) == ">=") 
-				{
-					$query->andFilterWhere([str_replace(" ","",substr($time[0],0,2)), "concat('',time)", trim(substr($time[0],2))]);	
-				}
-				else
-				{
-					$query->andFilterWhere(['like', "concat('',time)", $time[0]]);	
-				}
-			}	
-		}	
+			$query->andFilterWhere($p);
+		}	        
 
-        $query->andFilterWhere(['like', 'lower(subject)', strtolower($this->subject)])
-            ->andFilterWhere(['like', 'lower(title)', strtolower($this->title)])
-            ->andFilterWhere(['like', 'lower(reference)', strtolower($this->reference)])
-            ->andFilterWhere(['like', 'lower(tags)', strtolower($this->tags)])
-            ->andFilterWhere(['like', 'lower(remarks)', strtolower($this->remarks)]);
-
+        //$query->andFilterWhere(['like', 'lower(subject)', strtolower($this->subject)]);
+            
         return $dataProvider;
     }
 }

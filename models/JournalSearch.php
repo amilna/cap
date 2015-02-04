@@ -47,6 +47,80 @@ class JournalSearch extends Journal
         ];
     }
 	
+	private function queryString($fields)
+	{		
+		$params = [];
+		foreach ($fields as $afield)
+		{
+			$field = $afield[0];
+			$tab = isset($afield[1])?$afield[1]:false;			
+			if (!empty($this->$field))
+			{				
+				array_push($params,["like", "lower(".($tab?$tab.".":"").$field.")", strtolower($this->$field)]);
+			}
+		}	
+		return $params;
+	}	
+	
+	private function queryNumber($fields)
+	{		
+		$params = [];
+		foreach ($fields as $afield)
+		{
+			$field = $afield[0];
+			$tab = isset($afield[1])?$afield[1]:false;			
+			if (!empty($this->$field))
+			{				
+				$number = explode(" ",$this->$field);			
+				if (count($number) == 2)
+				{									
+					array_push($params,[$number[0], ($tab?$tab.".":"").$field, $number[1]]);	
+				}
+				elseif (count($number) > 2)
+				{															
+					array_push($params,['>=', ($tab?$tab.".":"").$field, $number[0]]);		
+					array_push($params,['<=', ($tab?$tab.".":"").$field, $number[0]]);		
+				}
+				else
+				{					
+					array_push($params,['=', ($tab?$tab.".":"").$field, str_replace(["<",">","="],"",$number[0])]);		
+				}									
+			}
+		}	
+		return $params;
+	}
+	
+	private function queryTime($fields)
+	{		
+		$params = [];
+		foreach ($fields as $afield)
+		{
+			$field = $afield[0];
+			$tab = isset($afield[1])?$afield[1]:false;			
+			if (!empty($this->$field))
+			{				
+				$time = explode(" - ",$this->$field);			
+				if (count($time) > 1)
+				{								
+					array_push($params,['>=', "concat('',".($tab?$tab.".":"").$field.")", $time[0]]);	
+					array_push($params,['<=', "concat('',".($tab?$tab.".":"").$field.")", $time[1]." 24:00:00"]);
+				}
+				else
+				{
+					if (substr($time[0],0,2) == "< " || substr($time[0],0,2) == "> " || substr($time[0],0,2) == "<=" || substr($time[0],0,2) == ">=") 
+					{					
+						array_push($params,[str_replace(" ","",substr($time[0],0,2)), "concat('',".($tab?$tab.".":"").$field.")", trim(substr($time[0],2))]);
+					}
+					else
+					{					
+						array_push($params,['like', "concat('',".($tab?$tab.".":"").$field.")", $time[0]]);
+					}
+				}	
+			}
+		}	
+		return $params;
+	}
+	
     /**
      * Creates data provider instance with search query applied
      *
@@ -103,57 +177,36 @@ class JournalSearch extends Journal
             'account_id' => $this->account_id,
             'transaction_id' => $this->transaction_id,
             //'quantity' => $this->quantity,
-            'amount' => $this->amount,
+            //'amount' => $this->amount,
             'type' => $this->type,
             'isdel' => $this->isdel,
-        ]);
-		
-		if (!empty($this->quantity))
+        ]);				
+				
+		$params = self::queryNumber([['quantity']]);		
+		foreach ($params as	$p)
 		{
-			
-			$quantity = explode(" ",$this->quantity);			
-			if (count($quantity) == 2)
-			{				
-				$query->andFilterWhere([$quantity[0], "quantity", $quantity[1]]);					
-			}
-			elseif (count($quantity) > 2)
-			{				
-				$query->andFilterWhere(['>=', "quantity", $quantity[0]])
-					->andFilterWhere(['<=', "quantity", $quantity[2]]);
-			}
-			else
-			{
-				$query->andFilterWhere(['=', "quantity", str_replace(["<",">","="],"",$quantity[0])]);	
-			}	
-		}	
+			$query->andFilterWhere($p);
+		}		
 		
-		if (!empty($this->time))
-		{
-			
-			$time = explode(" - ",$this->time);			
-			if (count($time) > 1)
-			{				
-				$query->andFilterWhere(['>=', "concat('',{{%cap_transaction}}.time)", $time[0]])
-					->andFilterWhere(['<=', "concat('',{{%cap_transaction}}.time)", $time[1]." 24:00:00"]);
-			}
-			else
-			{
-				if (substr($time[0],0,2) == "< " || substr($time[0],0,2) == "> " || substr($time[0],0,2) == "<=" || substr($time[0],0,2) == ">=") 
-				{
-					$query->andFilterWhere([str_replace(" ","",substr($time[0],0,2)), "concat('',{{%cap_transaction}}.time)", trim(substr($time[0],2))]);	
-				}
-				else
-				{
-					$query->andFilterWhere(['like', "concat('',{{%cap_transaction}}.time)", $time[0]]);	
-				}
-			}	
+		$params = self::queryTime([['time','{{%cap_transaction}}']]);				
+		foreach ($params as	$p)
+		{		
+			$query->andFilterWhere($p);
+		}
+		
+		$params = self::queryString([
+			['remarks','{{%cap_journal}}'],
+			['title','{{%cap_transaction}}'],
+			['subject','{{%cap_transaction}}'],
+			['tags','{{%cap_transaction}}'],
+			['remarks','{{%cap_transaction}}'],			
+		]);						
+		foreach ($params as	$p)
+		{		
+			$query->andFilterWhere($p);
 		}	
 			
-        $query->andFilterWhere(['like', 'lower({{%cap_journal}}.remarks)', strtolower($this->remarks)])			
-			->andFilterWhere(['like', 'lower({{%cap_transaction}}.title)', strtolower($this->title)])
-			->andFilterWhere(['like', 'lower({{%cap_transaction}}.subject)', strtolower($this->subject)])
-			->andFilterWhere(['like', 'lower({{%cap_transaction}}.tags)', strtolower($this->tags)])
-			->andFilterWhere(['like', 'lower({{%cap_transaction}}.remarks)', strtolower($this->transactionRemarks)])
+        $query->andFilterWhere(['like', 'lower({{%cap_transaction}}.remarks)', strtolower($this->transactionRemarks)])
 			->andFilterWhere(['like', "lower(concat({{%cap_account}}.code,' - ',{{%cap_account}}.name))", strtolower($this->account)]);
 
         return $dataProvider;
