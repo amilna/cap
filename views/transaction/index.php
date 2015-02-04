@@ -9,6 +9,7 @@ use amilna\yap\GridView;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('app', 'Transactions');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'CAP'), 'url' => ['/cap/default']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="transaction-index">
@@ -72,7 +73,7 @@ $this->params['breadcrumbs'][] = $this->title;
 				'filterType'=>GridView::FILTER_DATE_RANGE,
 				'filterWidgetOptions'=>[
 					'pluginOptions' => [
-						'format' => 'YYYY-MM-DD hh:mm:ss',				
+						'format' => 'YYYY-MM-DD HH:mm:ss',				
 						'todayHighlight' => true,
 						'timePicker'=>true,
 						'timePickerIncrement'=>15,
@@ -105,14 +106,20 @@ $this->params['breadcrumbs'][] = $this->title;
             'tags',
             'remarks:ntext',            
             [				
-				'attribute' => 'total',
+				'attribute' => 'total',				
 				'value'=>function($data){										
-					return $data->total;
-				},
-				//'mergeHeader'=>true,
+					return number_format($data->total,2);
+				},				
 				'hAlign'=>'right',
-				'pageSummary'=>true,
-				'pageSummaryFunc'=>'sum'
+				'pageSummary'=>function ($summary, $data, $widget) { 					
+					$r = 0;
+					foreach($data as $d)
+					{
+						$r += floatval(str_replace(",","",$d));
+					}
+					return number_format($r,2);
+				},
+				//'pageSummaryFunc'=>'sum'
 				
 			],
             // 'amount',

@@ -26,8 +26,8 @@ class JournalSearch extends Journal
     {
         return [
             [['id', 'account_id', 'transaction_id', 'type', 'isdel'], 'integer'],
-            [['remarks','time','title','subject','tags','transactionRemarks','account'], 'safe'],
-            [['quantity', 'amount'], 'number'],
+            [['quantity','remarks','time','title','subject','tags','transactionRemarks','account'], 'safe'],
+            [[ 'amount'], 'number'],
         ];
     }
 
@@ -102,11 +102,30 @@ class JournalSearch extends Journal
             'id' => $this->id,
             'account_id' => $this->account_id,
             'transaction_id' => $this->transaction_id,
-            'quantity' => $this->quantity,
+            //'quantity' => $this->quantity,
             'amount' => $this->amount,
             'type' => $this->type,
             'isdel' => $this->isdel,
         ]);
+		
+		if (!empty($this->quantity))
+		{
+			
+			$quantity = explode(" ",$this->quantity);			
+			if (count($quantity) == 2)
+			{				
+				$query->andFilterWhere([$quantity[0], "quantity", $quantity[1]]);					
+			}
+			elseif (count($quantity) > 2)
+			{				
+				$query->andFilterWhere(['>=', "quantity", $quantity[0]])
+					->andFilterWhere(['<=', "quantity", $quantity[2]]);
+			}
+			else
+			{
+				$query->andFilterWhere(['=', "quantity", str_replace(["<",">","="],"",$quantity[0])]);	
+			}	
+		}	
 		
 		if (!empty($this->time))
 		{
@@ -119,7 +138,14 @@ class JournalSearch extends Journal
 			}
 			else
 			{
-				$query->andFilterWhere(['like', "concat('',{{%cap_transaction}}.time)", $time[0]]);	
+				if (substr($time[0],0,2) == "< " || substr($time[0],0,2) == "> " || substr($time[0],0,2) == "<=" || substr($time[0],0,2) == ">=") 
+				{
+					$query->andFilterWhere([str_replace(" ","",substr($time[0],0,2)), "concat('',{{%cap_transaction}}.time)", trim(substr($time[0],2))]);	
+				}
+				else
+				{
+					$query->andFilterWhere(['like', "concat('',{{%cap_transaction}}.time)", $time[0]]);	
+				}
 			}	
 		}	
 			

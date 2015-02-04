@@ -9,6 +9,8 @@ use amilna\cap\components\Account;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('app', 'Account Codes');
+
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'CAP'), 'url' => ['/cap/default']];
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>

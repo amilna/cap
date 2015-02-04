@@ -13,6 +13,7 @@ use amilna\cap\models\Transaction;
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
 $this->title = Yii::t('app', 'Journals');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'CAP'), 'url' => ['/cap/default']];
 $this->params['breadcrumbs'][] = $this->title;
 
 $dataProvider->pagination = [
@@ -81,7 +82,7 @@ $dataProvider->pagination = [
 				'filterType'=>GridView::FILTER_DATE_RANGE,
 				'filterWidgetOptions'=>[
 					'pluginOptions' => [
-						'format' => 'YYYY-MM-DD hh:mm:ss',				
+						'format' => 'YYYY-MM-DD HH:mm:ss',				
 						'todayHighlight' => true,
 						'timePicker'=>true,
 						'timePickerIncrement'=>15,
@@ -132,8 +133,8 @@ $dataProvider->pagination = [
 				'value'=>function($data){										
 					return number_format($data->quantity,2);
 				},
-				'filterType'=>GridView::FILTER_MONEY,
-				'filterWidgetOptions'=>['options'=>['style'=>'text-align:right']],
+				//'filterType'=>GridView::FILTER_MONEY,
+				//'filterWidgetOptions'=>['options'=>['style'=>'text-align:right']],
 				'hAlign'=>'right',
 				'pageSummary'=>true,
 				'pageSummaryFunc'=>'sum'

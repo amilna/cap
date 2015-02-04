@@ -19,8 +19,7 @@ class TransactionSearch extends Transaction
     {
         return [
             [['id', 'type', 'isdel'], 'integer'],
-            [['subject', 'reference','tags','title', 'remarks', 'time'], 'safe'],
-            [['total'], 'number'],
+            [['total','subject', 'reference','tags','title', 'remarks', 'time'], 'safe'],            
         ];
     }
 
@@ -53,12 +52,51 @@ class TransactionSearch extends Transaction
         }
 
         $query->andFilterWhere([
-            'id' => $this->id,
-            'total' => $this->total,
-            'type' => $this->type,
-            'time' => $this->time,
+            'id' => $this->id,            
+            'type' => $this->type,            
             'isdel' => $this->isdel,
         ]);
+        
+        if (!empty($this->total))
+		{
+			
+			$total = explode(" ",$this->total);			
+			if (count($total) == 2)
+			{				
+				$query->andFilterWhere([$total[0], "total", $total[1]]);					
+			}
+			elseif (count($total) > 2)
+			{				
+				$query->andFilterWhere(['>=', "total", $total[0]])
+					->andFilterWhere(['<=', "total", $total[2]]);
+			}
+			else
+			{
+				$query->andFilterWhere(['=', "total", str_replace(["<",">","="],"",$total[0])]);	
+			}	
+		}	
+        
+        if (!empty($this->time))
+		{
+			
+			$time = explode(" - ",$this->time);			
+			if (count($time) > 1)
+			{				
+				$query->andFilterWhere(['>=', "concat('',time)", $time[0]])
+					->andFilterWhere(['<=', "concat('',time)", $time[1]." 24:00:00"]);
+			}
+			else
+			{
+				if (substr($time[0],0,2) == "< " || substr($time[0],0,2) == "> " || substr($time[0],0,2) == "<=" || substr($time[0],0,2) == ">=") 
+				{
+					$query->andFilterWhere([str_replace(" ","",substr($time[0],0,2)), "concat('',time)", trim(substr($time[0],2))]);	
+				}
+				else
+				{
+					$query->andFilterWhere(['like', "concat('',time)", $time[0]]);	
+				}
+			}	
+		}	
 
         $query->andFilterWhere(['like', 'lower(subject)', strtolower($this->subject)])
             ->andFilterWhere(['like', 'lower(title)', strtolower($this->title)])
