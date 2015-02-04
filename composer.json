@@ -1,0 +1,21 @@
+{
+    "name": "amilna/yii2-cap",
+    "description": "Company Accounting Plugin",
+    "type": "yii2-extension",
+    "keywords": ["yii2","extension","company","accounting"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Satrio Arditama",
+            "email": "iyo@amilna.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "amilna\\cap\\": ""
+        }
+    }
+}
