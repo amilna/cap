@@ -129,7 +129,7 @@ class TransactionSearch extends Transaction
 			$query->andFilterWhere($p);
 		}	
         
-        $params = self::queryTime([['subject'],['title'],['reference'],['tags'],['remarks']]);		
+        $params = self::queryString([['subject'],['title'],['reference'],['tags'],['remarks']]);		
 		foreach ($params as	$p)
 		{
 			$query->andFilterWhere($p);
