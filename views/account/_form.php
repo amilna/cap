@@ -4,6 +4,7 @@ use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 use yii\helpers\ArrayHelper;
 use kartik\widgets\Select2;
+use kartik\widgets\SwitchInput;
 
 /* @var $this yii\web\View */
 /* @var $model amilna\cap\models\AccountCode */
@@ -55,11 +56,23 @@ $listParent = []+ArrayHelper::map(($model->isNewRecord?$model->parents():$model-
 		],
 	]);?>   
 		</div>
-		<div class="col-sm-5">
-	<?= $form->field($model, 'increaseon')->dropDownList($model->itemAlias('increaseon')) ?>
+		<div class="col-sm-5">	
+	<?= $form->field($model, 'increaseon')->widget(Select2::classname(), [			
+			'data' => $model->itemAlias('increaseon'),				
+			'options' => ['placeholder' => Yii::t('app','Select a increase on type...')],
+			'pluginOptions' => [
+				'allowClear' => false
+			],			
+		]);
+	?>
 		</div>
 		<div class="col-sm-2">
-	<?= $form->field($model, 'isbalance')->checkBox(['label' => $model->attributeLabels()['isbalance']]) ?>		
+	
+	<?= $form->field($model, 'isbalance')->widget(SwitchInput::classname(), [			
+			'type' => SwitchInput::CHECKBOX,				
+		]);
+	?>
+	
 		</div>
 	</div>	
 
