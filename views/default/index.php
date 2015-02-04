@@ -1,12 +1,16 @@
+<?php
+use yii\helpers\Html;
+use yii\helpers\Url;
+
+?>
 <div class="cap-default-index">
-    <h1><?= $this->context->action->uniqueId ?></h1>
+    <h1>Company Accounting Plugin</h1>
     <p>
-        This is the view content for action "<?= $this->context->action->id ?>".
-        The action belongs to the controller "<?= get_class($this->context) ?>"
-        in the "<?= $this->context->module->id ?>" module.
+       Welcome to Company Accounting Plugin, there are 3 main parts of this module:
     </p>
-    <p>
-        You may customize this page by editing the following file:<br>
-        <code><?= __FILE__ ?></code>
-    </p>
+    <ul>
+		<li><?= Html::a(Yii::t('app','Account'),'account')?></li>
+		<li><?= Html::a(Yii::t('app','Transaction'),'transaction')?></li>
+		<li><?= Html::a(Yii::t('app','Journal'),'journal')?></li>
+    </ul>
 </div>
