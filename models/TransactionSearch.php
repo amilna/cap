@@ -32,6 +32,21 @@ class TransactionSearch extends Transaction
         return Model::scenarios();
     }
 	
+	private function queryString($fields)
+	{		
+		$params = [];
+		foreach ($fields as $afield)
+		{
+			$field = $afield[0];
+			$tab = isset($afield[1])?$afield[1]:false;			
+			if (!empty($this->$field))
+			{				
+				array_push($params,["like", "lower(".($tab?$tab.".":"").$field.")", strtolower($this->$field)]);
+			}
+		}	
+		return $params;
+	}	
+	
 	private function queryNumber($fields)
 	{		
 		$params = [];
