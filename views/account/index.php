@@ -59,7 +59,14 @@ $this->params['breadcrumbs'][] = $this->title;
 		<div class="col-xs-12" style="text-align:right">
 			<i>
 		<?php
-			$div = pow(10,max(0,(floor((strlen($dataProvider->getModels()[0]->max."")-1)/3)))*3);			
+			if (count($dataProvider->getModels()) == 0)
+			{
+				$div = 0;	
+			}
+			else
+			{			
+				$div = pow(10,max(0,(floor((strlen($dataProvider->getModels()[0]->max."")-1)/3)))*3);			
+			}	
 			echo Yii::t('app','Amount numbers are per ').($div == 0?"units":number_format($div,0,",","."));
 		?>
 			</i>
