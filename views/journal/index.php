@@ -48,7 +48,7 @@ $dataProvider->pagination = [
 		'pageSummaryRowOptions'=>['class'=>'kv-page-summary','style'=>'background-color: #fdfdfd'],
 		
 		'panel' => [
-			'type' => GridView::TYPE_PRIMARY,
+			'type' => GridView::TYPE_DEFAULT,
 			'heading' => false,
 		],
 		'toolbar' => [

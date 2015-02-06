@@ -37,7 +37,7 @@ use kartik\datetime\DateTimePicker;
 			<div class="col-sm-3">
 		<?/*= $form->field($model, 'time')->textInput() */?>
 		<?= $form->field($model, 'time')->widget(DateTimePicker::classname(), [				
-				'options' => ['placeholder' => 'Select operating time ...'],
+				'options' => ['placeholder' => 'Select transaction time ...'],
 				'convertFormat' => true,
 				'pluginOptions' => [
 					'format' => 'yyyy-MM-dd HH:i:s',
@@ -48,7 +48,7 @@ use kartik\datetime\DateTimePicker;
 		?>		    
 			</div>
 			<div class="col-sm-6">
-		<?= $form->field($model, 'reference')->textInput(['maxlength' => 255]) ?>		
+		<?= $form->field($model, 'reference')->textInput(['maxlength' => 255,'placeholder' => Yii::t('app','Number of printed notes...')]) ?>		
 			</div>
 			<div class="col-sm-3">	
 		<?= $form->field($model, 'type')->widget(Select2::classname(), [			
@@ -94,6 +94,7 @@ use kartik\datetime\DateTimePicker;
 			],
 			'options'=>[
 				'class'=>'form-control required','maxlength' => 255,				
+				'placeholder' => Yii::t('app','Person/institution involved in...')
 			]
 		]) 
 	?>    
@@ -102,7 +103,7 @@ use kartik\datetime\DateTimePicker;
 	
 	<?= $form->field($model, 'tags')->widget(Select2::classname(), [
 		'options' => [
-			'placeholder' => Yii::t('app','put additional tags ...'),
+			'placeholder' => Yii::t('app','Put additional tags, usefull for Helper Ledger ...'),
 		],
 		'pluginOptions' => [
 			'tags' => $model::getTags(),
@@ -179,6 +180,7 @@ use kartik\datetime\DateTimePicker;
 			],
 			'options'=>[
 				'class'=>'form-control required','maxlength' => 255,				
+				'placeholder' => Yii::t('app','Transaction title ...'),
 			]
 		]) 
 	?>    
@@ -230,7 +232,7 @@ use kartik\datetime\DateTimePicker;
     
     <div class="row">		
 		<div class="col-sm-12">
-    <?= $form->field($model, 'remarks')->textarea(['rows' => 3]) ?>
+    <?= $form->field($model, 'remarks')->textarea(['rows' => 3,'placeholder' => Yii::t('app','Unique description as additional information ...')]) ?>
     <?php /*
     use vova07\imperavi\Widget;
     echo $form->field($model, 'remarks')->widget(Widget::className(), [
