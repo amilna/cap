@@ -23,5 +23,11 @@
         "psr-4": {
             "amilna\\cap\\": ""
         }
-    }
+    },
+    "repositories":[
+		{
+			"type": "git",
+			"url": "https://github.com/amilna/yii2-yap"
+		}
+   ]
 }
