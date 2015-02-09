@@ -65,52 +65,44 @@ class AccountCode extends \yii\db\ActiveRecord
         ];
     }
     
-    public function defaultScope()
-    {      		
-        return array(
-            'condition'=>"parent_id is null",
-        );
-    }
-    
     public function getMax()
-    {                
-        $query =  new \yii\db\Query;
-        $query->select("sum(case when type = 0 then amount else 0 end) as max")
-				->from(Journal::tableName())
-				->where("isdel = 0");
-				
-		$row = $query->one();		
-		$res = $row["max"];
+    {                        		
+		$res = $this->db->createCommand("SELECT 
+					sum(case when type = 0 then amount else 0 end) as max 
+					FROM ".Journal::tableName()." 
+					WHERE isdel = :isdel")
+					->bindValues(["isdel"=>0])->queryScalar();		
         
         return ($res == null?0:$res);        
     }
     
     public function getSaldo()
-    {                
-        $query =  new \yii\db\Query;
-        $query->select("sum(case when type = 0 then amount else amount*(-1) end) as saldo,sum(case when type = 0 then amount else 0 end) as debet,sum(case when type = 1 then amount else 0 end) as credit")
-				->from(Journal::tableName())
-				->where("account_id = ".$this->id." AND isdel = 0");
+    {                        		
+		$res = $this->db->createCommand("SELECT 
+					sum(case when type = 0 then amount else amount*(-1) end) as saldo,sum(case when type = 0 then amount else 0 end) as debet,sum(case when type = 1 then amount else 0 end) as credit 
+					FROM ".Journal::tableName()." 
+					WHERE account_id = :aid AND isdel = :isdel")
+					->bindValues(["isdel"=>0,"aid"=>$this->id])->queryScalar();						
 		
 		$tot = 0;
 		foreach ($this->accountCodes as $a)
 		{
 			$tot += $a->saldo;	
 		}
-		
-		$row = $query->one();
-		//$res = $row["debet"]-$row["credit"]+$tot;		
-		$res = $row["saldo"]+$tot;
+				
+		$res += $tot;
         
         return ($res == null?0:$res);        
     }
     
     public function getCredit()
-    {                
-        $query =  new \yii\db\Query;
-        $query->select("sum(amount)")
-				->from(Journal::tableName())
-				->where("account_id = ".$this->id." AND type = 1 AND isdel = 0");
+    {                       		
+		$res = $this->db->createCommand("SELECT 
+					sum(amount) 
+					FROM ".Journal::tableName()." 
+					WHERE account_id = :aid AND type = 1 AND isdel = :isdel")
+					->bindValues(["isdel"=>0,"aid"=>$this->id])->queryScalar();		
+		
 		
 		$tot = 0;
 		foreach ($this->accountCodes as $a)
@@ -118,17 +110,18 @@ class AccountCode extends \yii\db\ActiveRecord
 			$tot += $a->credit;	
 		}
 		
-		$res = $query->scalar()+$tot;		
+		$res += $tot;		
         
         return ($res == null?0:$res);        
     }
     
     public function getDebet()
-    {                
-        $query =  new \yii\db\Query;
-        $query->select("sum(amount)")
-				->from(Journal::tableName())
-				->where("account_id = ".$this->id." AND type = 0 AND isdel = 0");
+    {                                
+		$res = $this->db->createCommand("SELECT 
+					sum(amount) 
+					FROM ".Journal::tableName()." 
+					WHERE account_id = :aid AND type = 0 AND isdel = :isdel")
+					->bindValues(["isdel"=>0,"aid"=>$this->id])->queryScalar();				
 		
 		$tot = 0;
 		foreach ($this->accountCodes as $a)
@@ -136,7 +129,7 @@ class AccountCode extends \yii\db\ActiveRecord
 			$tot += $a->debet;	
 		}
 		
-		$res = $query->scalar()+$tot;		
+		$res += $tot;		
         
         return ($res == null?0:$res);        
     }
@@ -144,17 +137,18 @@ class AccountCode extends \yii\db\ActiveRecord
     public function getTotal()
     {                
         $query =  new \yii\db\Query;
-        $query->select("sum(amount)")
+        $res = $query->select("sum(amount)")
 				->from(Journal::tableName())
-				->where("account_id = ".$this->id." AND isdel = 0");						
-		
+				->where("account_id = ".$this->id." AND isdel = 0")
+				->scalar();						
+						
 		$tot = 0;
 		foreach ($this->accountCodes as $a)
 		{
 			$tot += $a->total;	
 		}
 		
-		$res = $query->scalar()+$tot;		
+		$res += $tot;		
         
         return ($res == null?0:$res);        
     }
