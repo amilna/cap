@@ -27,7 +27,7 @@
     "repositories":[
 		{
 			"type": "git",
-			"url": "https://github.com/amilna/yii2-yap"
+			"url": "https://github.com/amilna/yap"
 		}
    ]
 }
