@@ -10,13 +10,13 @@ The preferred way to install this extension is through [composer](http://getcomp
 Either run
 
 ```
-php composer.phar require --prefer-dist amilna/yii2-cap "*"
+php composer.phar require --prefer-dist amilna/yii2-cap "dev-master"
 ```
 
 or add
 
 ```
-"amilna/yii2-cap": "*"
+"amilna/yii2-cap": "dev-master"
 ```
 
 to the require section of your `composer.json` file.
