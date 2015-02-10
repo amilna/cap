@@ -106,7 +106,7 @@ use kartik\datetime\DateTimePicker;
 			'placeholder' => Yii::t('app','Put additional tags, usefull for Helper Ledger ...'),
 		],
 		'pluginOptions' => [
-			'tags' => $model::getTags(),
+			'tags' => $model->getTags(),
 		],
 	]) ?>
 			

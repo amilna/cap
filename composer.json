@@ -17,22 +17,11 @@
 	"kartik-v/yii2-money": "*",
 	"kartik-v/yii2-date-range": "*",
 	"kartik-v/yii2-grid": "*",
-	"amilna/yii2-yap" : "dev-master",
-	"amilna/yii2-sequence-widget": "dev-master"
+	"amilna/yii2-yap" : "*"
     },
     "autoload": {
         "psr-4": {
             "amilna\\cap\\": ""
         }
-    },
-    "repositories":[
-		{
-			"type": "git",
-			"url": "https://github.com/amilna/yap"
-		},
-		{
-			"type": "git",
-			"url": "https://github.com/amilna/yii2-sequence-widget"
-		}
-   ]
+    }    
 }

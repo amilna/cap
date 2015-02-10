@@ -19,6 +19,8 @@ $this->params['breadcrumbs'][] = $this->title;
 $dataProvider->pagination = [
                 'pageSize' => 10,
             ];
+            
+$tra = new Transaction();            
 ?>
 <div class="journal-index">
 
@@ -119,7 +121,7 @@ $dataProvider->pagination = [
 				},
 				'filterType'=>GridView::FILTER_SELECT2,				
 				'filterWidgetOptions'=>[
-					'data'=>ArrayHelper::map(Transaction::accounts(),"name","name"),
+					'data'=>ArrayHelper::map($tra->accounts(),"name","name"),
 					'options' => ['placeholder' => Yii::t('app','Select an account...')],
 					'pluginOptions' => [
 						'allowClear' => true

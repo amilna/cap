@@ -72,11 +72,11 @@ $this->params['breadcrumbs'][] = $this->title;
             [				
 				'attribute'=>'type',				
 				'value'=>function($data){										
-					return \amilna\cap\models\Transaction::itemAlias('type',$data->type);
+					return $data->itemAlias('type',$data->type);
 				},
 				'filterType'=>GridView::FILTER_SELECT2,				
 				'filterWidgetOptions'=>[
-					'data'=>\amilna\cap\models\Transaction::itemAlias('type'),
+					'data'=>$searchModel->itemAlias('type'),
 					'options' => ['placeholder' => Yii::t('app','Select a transaction type...')],
 					'pluginOptions' => [
 						'allowClear' => true
