@@ -1,6 +1,6 @@
 CAP
 ===
-Company Accounting Plugin
+Company Accounting Plugin, very simple business process
 
 Installation
 ------------
@@ -20,25 +20,6 @@ or add
 ```
 
 to the require section of your `composer.json` file.
-
-Since this extensions stil in dev stages, be sure also add following line in `composer.json` file.
-
-```json
-"repositories":[
-		{
-			"type": "git",
-			"url": "https://github.com/amilna/cap"
-		},
-		{
-			"type": "git",
-			"url": "https://github.com/amilna/yap"
-		},
-		{
-			"type": "git",
-			"url": "https://github.com/amilna/yii2-sequence-widget"
-		}	
-   ]
-```
 
 run migration for database
 
