@@ -212,14 +212,7 @@ use kartik\datetime\DateTimePicker;
 	<div class="row">		
 		<div class="col-sm-6">
 			<div class="well debet">		
-				<h4><?= Yii::t('app','Debet') ?> <small class="pull-right"><?= Yii::t('app','amount is automatically adjusted to total') ?></small></h4>
-				<!--
-				<div class="row">		
-					<div class="col-xs-5"><h5><?= Yii::t('app','Account')?></h5></div>
-					<div class="col-xs-3"><h5><?= Yii::t('app','Qty')?></h5></div>
-					<div class="col-xs-4"><h5><?= Yii::t('app','Amount')?></h5></div>
-				</div>		
-				-->
+				<h4><?= Yii::t('app','Debet') ?> <small class="pull-right"><?= Yii::t('app','amount is automatically adjusted to total') ?></small></h4>				
 			</div>
 		</div>
 		<div class="col-sm-6">
@@ -232,28 +225,7 @@ use kartik\datetime\DateTimePicker;
     
     <div class="row">		
 		<div class="col-sm-12">
-    <?= $form->field($model, 'remarks')->textarea(['rows' => 3,'placeholder' => Yii::t('app','Unique description as additional information ...')]) ?>
-    <?php /*
-    use vova07\imperavi\Widget;
-    echo $form->field($model, 'remarks')->widget(Widget::className(), [
-		'settings' => [
-			'lang' => substr(Yii::$app->language,0,2),
-			'minHeight' => 200,
-			'imageUpload' => Url::to(['//cap/default/image-upload']),
-			'imageManagerJson' => Url::to(['//cap/default/images-get']),			
-			'fileUpload' => Url::to(['//cap/default/file-upload']),
-			'fileManagerJson' => Url::to(['//cap/default/files-get']),
-			'plugins' => [				
-				'imagemanager',
-				'filemanager',
-				'video',
-				'table',
-				'clips',				
-				'fullscreen'
-			]
-		]
-	]);
-    */?>
+    <?= $form->field($model, 'remarks')->textarea(['rows' => 3,'placeholder' => Yii::t('app','Unique description as additional information ...')]) ?>    
 		</div>
 	</div>
     
@@ -274,10 +246,10 @@ use kartik\datetime\DateTimePicker;
 			</div>	-->
 			<div class="col-xs-7" style="padding-right:0px;">																		
 				<div class="kv-plugin-loading loading-w0:N">&nbsp;</div>				
-				<?= Html::dropDownList("Transaction[:T][:N][account_id]",false,ArrayHelper::map($model->accounts(),"id","name"),["id"=>"w0:N","class"=>"form-control kv-hide input-md transaction-:T-account","placeholder"=>"Select an account...","style"=>"width:100%","data-krajee-select2"=>"select2_x"]) ?>
+				<?= Html::dropDownList("Transaction[:T][:N][account_id]",false,ArrayHelper::map($model->accounts(),"id","name"),["id"=>"w0:N","class"=>"form-control kv-hide input-md transaction-:T-account","placeholder"=>Yii::t("app","Select an account..."),"style"=>"width:100%","data-krajee-select2"=>"select2_x"]) ?>
 			</div>	
 			<div class="col-xs-5" style="padding-left:0px;">																						
-				<?= Html::textInput("Transaction[:T][:N][remarks]",false,["id"=>"w3:N","class"=>"form-control","placeholder"=>"Remarks...","style"=>"width:100%"]) ?>
+				<?= Html::textInput("Transaction[:T][:N][remarks]",false,["id"=>"w3:N","class"=>"form-control","placeholder"=>Yii::t("app","Remarks..."),"style"=>"width:100%"]) ?>
 			</div>
 		</div>			
 		<div class="row">
