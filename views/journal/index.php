@@ -132,11 +132,10 @@ $tra = new Transaction();
             'remarks:ntext',
             [				
 				'attribute' => 'quantity',
-				'value'=>function($data){										
-					return number_format($data->quantity,2);
-				},
-				//'filterType'=>GridView::FILTER_MONEY,
-				//'filterWidgetOptions'=>['options'=>['style'=>'text-align:right']],
+				'value'=>function($data){	
+					$module = Yii::$app->getModule('cap');									
+					return number_format($data->quantity,2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]);
+				},				
 				'hAlign'=>'right',
 				'pageSummary'=>true,
 				'pageSummaryFunc'=>'sum'
@@ -145,41 +144,43 @@ $tra = new Transaction();
             [				
 				'attribute' => 'debet',
 				'value'=>function($data){										
-					//return $data->debet;
-					return number_format($data->debet,2);
+					$module = Yii::$app->getModule('cap');									
+					return number_format($data->debet,2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]);
 				},
 				'mergeHeader'=>true,
 				'headerOptions'=>['class'=>'kv-align-middle'],
 				'hAlign'=>'right',
 				'vAlign'=>'top',
 				'pageSummary'=>function ($summary, $data, $widget) { 					
+					$module = Yii::$app->getModule('cap');
 					$r = 0;
 					foreach($data as $d)
 					{
-						$r += floatval(str_replace(",","",$d));
+						$r += floatval(str_replace($module->currency["thousand_separator"],"",$d));
 					}
-					return number_format($r,2);
+					return number_format($r,2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]);
 				},
-				//'pageSummaryFunc'=>'sum'
+				'pageSummaryFunc'=>'sum'
 				
 			],
             [				
 				'attribute' => 'credit',
 				'value'=>function($data){										
-					//return $data->credit;
-					return number_format($data->credit,2);
+					$module = Yii::$app->getModule('cap');									
+					return number_format($data->credit,2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]);
 				},				
 				'mergeHeader'=>true,
 				'headerOptions'=>['class'=>'kv-align-middle'],
 				'hAlign'=>'right',
 				'vAlign'=>'top',
 				'pageSummary'=>function ($summary, $data, $widget) { 					
+					$module = Yii::$app->getModule('cap');
 					$r = 0;
 					foreach($data as $d)
 					{
-						$r += floatval(str_replace(",","",$d));
+						$r += floatval(str_replace($module->currency["thousand_separator"],"",$d));
 					}
-					return number_format($r,2);
+					return number_format($r,2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]);
 				},
 				
 			],

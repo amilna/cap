@@ -111,16 +111,18 @@ $this->params['breadcrumbs'][] = $this->title;
             [				
 				'attribute' => 'total',				
 				'value'=>function($data){										
-					return number_format($data->total,2);
+					$module = Yii::$app->getModule('cap');
+					return number_format($data->total,2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]);
 				},				
 				'hAlign'=>'right',
 				'pageSummary'=>function ($summary, $data, $widget) { 					
+					$module = Yii::$app->getModule('cap');
 					$r = 0;
 					foreach($data as $d)
 					{
-						$r += floatval(str_replace(",","",$d));
+						$r += floatval(str_replace($module->currency["thousand_separator"],"",$d));
 					}
-					return number_format($r,2);
+					return number_format($r,2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]);
 				},
 				//'pageSummaryFunc'=>'sum'
 				

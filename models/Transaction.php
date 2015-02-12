@@ -199,4 +199,14 @@ class Transaction extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Journal::className(), ['transaction_id' => 'id']);
     }
+    
+    public function toMoney($value = false)
+    {
+		if ($value)
+		{
+			$module = Yii::$app->getModule('cap');
+			$value = $module->currency["symbol"].number_format($value,2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]);
+		}
+		return $value;
+	}
 }

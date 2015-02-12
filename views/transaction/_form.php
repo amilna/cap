@@ -187,12 +187,13 @@ use kartik\datetime\DateTimePicker;
 		</div>
 		<div class="col-sm-3">        			
     <?php		
+		$module = Yii::$app->getModule('cap');
 		echo $form->field($model, 'total')->widget(MaskMoney::classname(), [								
 				'pluginOptions' => [
-					'prefix' => 'Rp ',
+					'prefix' => $module->currency["symbol"],
 					'suffix' => '',
-					'thousands' => '.',
-					'decimal' => ',',
+					'thousands' => $module->currency["thousand_separator"],
+					'decimal' => $module->currency["decimal_separator"],
 					'precision' => 2, 
 					'allowNegative' => false
 				],

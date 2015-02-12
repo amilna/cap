@@ -12,6 +12,8 @@ class Account extends Component
 {
 	public function getHtmlIndex($id = false, $name = false)
 	{
+		$module = Yii::$app->getModule('cap');											
+					
 		$search = $id;
 		$sql = 'id = :search';
 		if ($name)
@@ -46,7 +48,7 @@ class Account extends Component
 					<ul id="account-codes-'.$account->id.'" class="navs list-unstyled" style="clear:right">';			
 		*/			
 		$html = '<li>
-					'.($account->parent_id != null?$account->code.' - ':'<h4>').Html::a($account->name, ['view', 'id' => $account->id]).'<span class="pull-right">'./*" ".$account->debet."-".$account->credit."= ".*/number_format($value/($div == 0?1:$div),2,",",".").'</span>'.($account->parent_id != null?'':'</h4>').'
+					'.($account->parent_id != null?$account->code.' - ':'<h4>').Html::a($account->name, ['view', 'id' => $account->id]).'<span class="pull-right">'./*" ".$account->debet."-".$account->credit."= ".*/number_format($value/($div == 0?1:$div),2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]).'</span>'.($account->parent_id != null?'':'</h4>').'
 					<ul id="account-codes-'.$account->id.'" class="navs" style="clear:right">';						
 		
 		$children = $account->accountCodes;	  

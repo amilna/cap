@@ -35,6 +35,7 @@ add in modules section of main config
 	],
 	'cap' => [
 		'class' => 'amilna\cap\Module',
+		'currency' => ["symbol"=>"Rp","decimal_separator"=>",","thousand_separator"=>"."],
 	],
 ```
 

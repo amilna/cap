@@ -1,6 +1,7 @@
 <?php
 
 use yii\helpers\Url;
+$module = Yii::$app->getModule('cap');
 ?>
 <script type="text/javascript">
 <?php $this->beginBlock('JS_END') ?>
@@ -137,7 +138,7 @@ use yii\helpers\Url;
 				$("#w1"+n+"").val(typeof journal["quantity"] !== "undefined"?journal["quantity"]:1);
 			}
 			
-			var maskMoney_x = {"prefix":"","suffix":"","thousands":".","decimal":",","precision":2,"allowNegative":false};			
+			var maskMoney_x = {"prefix":"","suffix":"","thousands":"<?=$module->currency["thousand_separator"]?>","decimal":"<?=$module->currency["decimal_separator"]?>","precision":2,"allowNegative":false};			
 			jQuery("#w1"+n+"-disp").maskMoney(maskMoney_x);
 			var val = parseFloat(jQuery("#w1"+n).val());
 			jQuery("#w1"+n+"-disp").maskMoney("mask", val);
@@ -155,7 +156,7 @@ use yii\helpers\Url;
 				$("#w2"+n+"").val(typeof journal["amount"] !== "undefined"?journal["amount"]:total);
 			}
 			
-			var maskMoney_x = {"prefix":"","suffix":"","thousands":".","decimal":",","precision":2,"allowNegative":false};							
+			var maskMoney_x = {"prefix":"","suffix":"","thousands":"<?=$module->currency["thousand_separator"]?>","decimal":"<?=$module->currency["decimal_separator"]?>","precision":2,"allowNegative":false};			
 			jQuery("#w2"+n+"-disp").maskMoney(maskMoney_x);
 			var val = parseFloat(jQuery("#w2"+n).val());			
 			jQuery("#w2"+n+"-disp").maskMoney("mask", val);

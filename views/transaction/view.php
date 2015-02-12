@@ -208,12 +208,13 @@ $this->params['breadcrumbs'][] = $this->title;
 		</div>
 		<div class="col-sm-3">        			
     <?php		
+		$module = Yii::$app->getModule('cap');
 		echo $form->field($model, 'total')->widget(MaskMoney::classname(), [								
 				'pluginOptions' => [
-					'prefix' => 'Rp ',
+					'prefix' => $module->currency["symbol"],
 					'suffix' => '',
-					'thousands' => '.',
-					'decimal' => ',',
+					'thousands' => $module->currency["thousand_separator"],
+					'decimal' => $module->currency["decimal_separator"],
 					'precision' => 2, 
 					'allowNegative' => false,					
 				],
@@ -233,14 +234,7 @@ $this->params['breadcrumbs'][] = $this->title;
 	<div class="row">		
 		<div class="col-sm-6">
 			<div class="well debet">		
-				<h4><?= Yii::t('app','Debet') ?> <small class="pull-right"><?= Yii::t('app','amount is automatically adjusted to total') ?></small></h4>
-				<!--
-				<div class="row">		
-					<div class="col-xs-5"><h5><?= Yii::t('app','Account')?></h5></div>
-					<div class="col-xs-3"><h5><?= Yii::t('app','Qty')?></h5></div>
-					<div class="col-xs-4"><h5><?= Yii::t('app','Amount')?></h5></div>
-				</div>		
-				-->
+				<h4><?= Yii::t('app','Debet') ?> <small class="pull-right"><?= Yii::t('app','amount is automatically adjusted to total') ?></small></h4>				
 			</div>
 		</div>
 		<div class="col-sm-6">
