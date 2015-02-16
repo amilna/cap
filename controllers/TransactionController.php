@@ -35,7 +35,7 @@ class TransactionController extends Controller
     public function actionIndex($format= false,$arraymap= false,$term = false)
     {        
         $searchModel = new TransactionSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams+($term?['TransactionSearch'=>[$arraymap=>$term]]:[]));                                
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams+($term?['TransactionSearch'=>['search'=>$term]]:[]));
 		
 		if ($format == 'json')
         {
@@ -46,7 +46,7 @@ class TransactionController extends Controller
 				if ($arraymap)
 				{
 					$map = explode(",",$arraymap);
-					if (count($map) == 1 || $term)
+					if (count($map) == 1)
 					{
 						$obj = $d[$arraymap];
 					}
@@ -57,7 +57,7 @@ class TransactionController extends Controller
 						{
 							$k = explode(":",$a);						
 							$v = (count($k) > 1?$k[1]:$k[0]);
-							$obj[$k[0]] = (isset($d[$v])?$d[$v]:null);
+							$obj[$k[0]] = ($v == "Obj"?json_encode($d->attributes):(isset($d[$v])?$d[$v]:null));
 						}
 					}
 				}
