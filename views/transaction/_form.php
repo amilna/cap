@@ -37,7 +37,8 @@ use kartik\datetime\DateTimePicker;
 			<div class="col-sm-3">
 		<?/*= $form->field($model, 'time')->textInput() */?>
 		<?= $form->field($model, 'time')->widget(DateTimePicker::classname(), [				
-				'options' => ['placeholder' => 'Select transaction time ...'],
+				'options' => ['placeholder' => 'Select transaction time ...','readonly'=>true],
+				'removeButton'=>false,
 				'convertFormat' => true,
 				'pluginOptions' => [
 					'format' => 'yyyy-MM-dd HH:i:s',

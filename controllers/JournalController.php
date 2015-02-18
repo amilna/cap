@@ -60,6 +60,8 @@ class JournalController extends Controller
      */
     public function actionCreate()
     {
+        return $this->redirect(['index']);
+        
         $model = new Journal();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -79,6 +81,8 @@ class JournalController extends Controller
      */
     public function actionUpdate($id)
     {
+        return $this->redirect(['index']);
+        
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
@@ -98,6 +102,8 @@ class JournalController extends Controller
      */
     public function actionDelete($id)
     {
+        return $this->redirect(['index']);
+        
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);

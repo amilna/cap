@@ -28,9 +28,9 @@ $tra = new Transaction();
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a(Yii::t('app', 'Create {modelClass}', [
+        <?/*= Html::a(Yii::t('app', 'Create {modelClass}', [
     'modelClass' => 'Transaction',
-]), ['//cap/transaction/create'], ['class' => 'btn btn-success']) ?>
+]), ['//cap/transaction/create'], ['class' => 'btn btn-success'])*/ ?>
     </p>
 		
     <?= GridView::widget([
