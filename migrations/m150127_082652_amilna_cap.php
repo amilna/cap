@@ -13,8 +13,12 @@ class m150127_082652_amilna_cap extends Migration
             'name' => Schema::TYPE_STRING . ' NOT NULL',
             'parent_id' => Schema::TYPE_INTEGER,
             'increaseon' => Schema::TYPE_SMALLINT.' NOT NULL',            
-            'isbalance' => Schema::TYPE_BOOLEAN.' NOT NULL DEFAULT FALSE',            
-            'isdel' => Schema::TYPE_SMALLINT.' NOT NULL DEFAULT 0',            
+            'isbalance' => Schema::TYPE_BOOLEAN.' NOT NULL DEFAULT FALSE',
+            'exchangable' => Schema::TYPE_BOOLEAN.' NOT NULL DEFAULT FALSE',
+            'id_left' => Schema::TYPE_INTEGER.' NOT NULL DEFAULT (-1)',
+            'id_right' => Schema::TYPE_INTEGER.' NOT NULL DEFAULT 0',
+            'id_level' => Schema::TYPE_INTEGER.' NOT NULL DEFAULT 0',
+            'isdel' => Schema::TYPE_SMALLINT.' NOT NULL DEFAULT 0',
         ]);
         $this->createIndex($this->db->tablePrefix.'cap_account_code'.'_key', $this->db->tablePrefix.'cap_account', 'code', true);        
         $this->addForeignKey( $this->db->tablePrefix.'cap_account_parent_id', $this->db->tablePrefix.'cap_account', 'parent_id', $this->db->tablePrefix.'cap_account', 'id', 'SET NULL', null );

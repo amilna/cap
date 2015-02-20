@@ -33,7 +33,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'name',            
             [
 				'attribute'=>'parent',
-				'value'=>($model->parent_id == null?'':$model->parent->code.' - ').$model->parent->name,
+				'value'=>($model->parent_id == null?'':$model->parent->code.' - '.$model->parent->name),
             ], 
             [
 				'attribute'=>'increaseon',
@@ -41,7 +41,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ],            
             [
 				'attribute'=>'isbalance',
-				'value'=>$model->itemAlias('isbalance',$model->isbalance),
+				'value'=>$model->itemAlias('isbalance',$model->isbalance?1:0),
             ],
             //'isdel',
         ],

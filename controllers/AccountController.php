@@ -35,8 +35,12 @@ class AccountController extends Controller
         $searchModel = new AccountCodeSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);        
         
-        $query = $dataProvider->query;        
-        $query->andwhere('parent_id is null');                
+        $query = $dataProvider->query;                      
+        $query->andwhere('id_left > 1')
+			//->orderBy('id_right desc');
+			->orderBy('id_left');
+			
+		$dataProvider->pagination = false;	
         
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -44,6 +48,22 @@ class AccountController extends Controller
         ]);
     }
     
+    
+    public function actionDaftar()
+    {
+        $searchModel = new AccountCodeSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);        
+        
+        $query = $dataProvider->query;        
+        $query->andwhere('parent_id is null');                        
+			
+		$dataProvider->pagination = false;	
+        
+        return $this->render('daftar', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
 
     /**
      * Displays a single AccountCode model.
@@ -107,9 +127,12 @@ class AccountController extends Controller
 				$model->parent_id = $parent_id;
 				$model->increaseon = (in_array(substr($model->code,0,1),["1","5"])?0:1);
 				$model->isbalance = (in_array(substr($model->code,0,1),["4","5"])?0:1);				
+				$model->exchangable = (in_array(substr($model->code,0,1),["1"])?1:0);				
 				$model->save();				
 			}
-		}					
+		}
+		
+		return $this->redirect(['index']);					
     }
 
     /**
@@ -119,21 +142,31 @@ class AccountController extends Controller
      */
     public function actionCreate()
     {
-        $model = new AccountCode();
-		
-		$model->isdel = 0;		
-		
+        $model = new AccountCode();				
+        
+        /*
+        $get = Yii::$app->request->get();
+        if (isset($get['attributes']))
+        {			
+			$attr = $get['attributes'];			
+			if (isset($attr["error"])) {
+				$model->addErrors($attr["error"]);
+			}
+			$model->attributes = $attr;	
+		}
+		*/ 		
+				
         if (Yii::$app->request->post()) {						
-			$model->load(Yii::$app->request->post());			
-			
-			if ($model->save()) {
+			$model->load(Yii::$app->request->post());						
+			if ($model->save()) {				
 				return $this->redirect(['view', 'id' => $model->id]);
 			}
-        } else {
-            return $this->render('create', [
-                'model' => $model
-            ]);
         }
+        
+		return $this->render('create', [
+			'model' => $model
+		]);
+        
     }
 
     /**
@@ -144,7 +177,7 @@ class AccountController extends Controller
      */
     public function actionUpdate($id)
     {
-        $model = $this->findModel($id);				
+        $model = $this->findModel($id);								
 		
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);

@@ -148,15 +148,21 @@ class Transaction extends \yii\db\ActiveRecord
 		return $tags;
 	}
 	
+	public function getAmount()
+	{
+		return $this->total*(in_array($this->type,[0,1,3])?1:-1);
+	}
+	
 	public function itemAlias($list,$item = false,$bykey = false)
 	{
 		$lists = [
 			'type'=>[							
-							0=>Yii::t('app','Assets buying or transfers'),
+							0=>Yii::t('app','Transfers'),
 							3=>Yii::t('app','Receipt'),
 							4=>Yii::t('app','Reduction'),
 							1=>Yii::t('app','Revenues'),
 							2=>Yii::t('app','Expenses'),
+							5=>Yii::t('app','Assets buying'),
 							
 						],			
 		];				

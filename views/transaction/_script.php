@@ -10,41 +10,41 @@ $module = Yii::$app->getModule('cap');
 		var usedaccounts = [];
 		
 		function filterOptions(tipe,increaseon)
-		{			
-			var inc = (increaseon == "debet"?0:0);
+		{											
+			var cek = function(a){									
+					return ( a["increaseon"] == 0 && a["isbalance"] == true 							
+							?true:false);
+				};
+				
 			if (tipe == 1)
 			{
-				var inc = (increaseon == "debet"?0:1);
+				var cek = function(a){									
+					return ( a["increaseon"] == (increaseon == "debet"?0:1) && a["isbalance"] == (increaseon == "debet"?true:false) 							
+							?true:false);
+				};
 			}
 			else if (tipe == 2)
 			{
-				var inc = (increaseon == "debet"?0:0);			
-			}												
-			else if (tipe == 3)
-			{
-				var inc = (increaseon == "debet"?0:1);			
-			}										
-			else if (tipe == 4)
-			{
-				var inc = (increaseon == "debet"?1:0);			
-			}					
-			
-			var ibl = (increaseon == "debet"?true:true);
-			if (tipe == 1)
-			{
-				var ibl = (increaseon == "debet"?true:false);
-			}
-			else if (tipe == 2)
-			{
-				var ibl = (increaseon == "debet"?false:true);			
+				var cek = function(a){									
+					return ( a["increaseon"] == 0 && a["isbalance"] == (increaseon == "debet"?false:true) 							
+							?true:false);
+				};		
 			}										
 			else if (tipe == 3)
-			{
-				var ibl = (increaseon == "debet"?true:true);			
+			{				
+				var cek = function(a){									
+					return ( a["increaseon"] == (increaseon == "debet"?0:1)
+					//return ( a["increaseon"] == (increaseon == "debet"?0:1) && a["isbalance"] == (increaseon == "debet"?true:false) 
+							//|| a["increaseon"] == (increaseon == "debet"?0:1) && a["isbalance"] == true 
+							?true:false);
+				};		
 			}
 			else if (tipe == 4)
 			{
-				var ibl = (increaseon == "debet"?true:true);			
+				var cek = function(a){									
+					return ( a["increaseon"] == (increaseon == "debet"?1:0) && a["isbalance"] == true 							
+							?true:false);
+				};		
 			}
 			
 			$(".transaction-"+increaseon+"-account option").each(function(i,d){
@@ -63,7 +63,7 @@ $module = Yii::$app->getModule('cap');
 						
 						//console.log(a,a["isbalance"],ibl);
 						
-						if (a["isbalance"] === ibl && a["increaseon"] === inc && ((typeof usedaccounts[a["id"]] == "undefined") || isuse) )
+						if (cek(a) && ((typeof usedaccounts[a["id"]] == "undefined") || isuse) )
 						{
 							$(d).prop("disabled",false);
 							$(d).attr("class","");

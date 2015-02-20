@@ -74,57 +74,78 @@ $this->params['breadcrumbs'][] = $this->title;
 		</div>
 	</div>
 	
+	<?php
+		$level = 0;		
+		$html0 = "";
+		$html1 = "";
+		$html2 = "";
+		$html3 = "";
+		$xtml = "";
+		foreach ($dataProvider->getModels() as $account)
+		{											
+			$value = $account->saldo*($account->increaseon == 0?1:-1);
+			$html = "";
+			if ($account->id_level > $level)
+			{																
+				
+				for ($i = 0;$i < $account->id_level-$level;$i++)
+				{
+					$html .= '<ul style="list-style-type: none;padding: 0px;margin-left: 20px;clear:right"><li>';	
+				}
+				
+				$html .= ($account->id_level != 2?$account->code.' - ':'<h4>').Html::a($account->name, ['view', 'id' => $account->id]).'<span class="pull-right">'./*" ".$account->debet."-".$account->credit."= ".*/number_format($value/($div == 0?1:$div),2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]).'</span>'.($account->id_level != 2?'':'</h4>').' ('.$account->id_left.'-'.$account->id_right.'-'.$account->id_level.')';
+			
+			}
+			elseif ($account->id_level < $level)
+			{
+				for ($i = 0;$i < $level-$account->id_level;$i++)
+				{					
+					$html .= '</li></ul>';	
+				}
+				
+				$html .= ($account->id_level != 2?$account->code.' - ':'<h4>').Html::a($account->name, ['view', 'id' => $account->id]).'<span class="pull-right">'./*" ".$account->debet."-".$account->credit."= ".*/number_format($value/($div == 0?1:$div),2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]).'</span>'.($account->id_level != 2?'':'</h4>').' ('.$account->id_left.'-'.$account->id_right.'-'.$account->id_level.')';
+							
+																							
+				
+			}
+			else
+			{
+				$html .= '<li>'.($account->id_level != 2?$account->code.' - ':'<h4>').Html::a($account->name, ['view', 'id' => $account->id]).'<span class="pull-right">'./*" ".$account->debet."-".$account->credit."= ".*/number_format($value/($div == 0?1:$div),2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]).'</span>'.($account->id_level != 2?'':'</h4>').' ('.$account->id_left.'-'.$account->id_right.'-'.$account->id_level.')</li>';
+			}						
+						
+			if ($account->isbalance && $account->increaseon == 0)
+			{
+				$html0 .= $html;	
+			}
+			elseif ($account->isbalance && $account->increaseon == 1)
+			{
+				$html1 .= $html;	
+			}
+			elseif (!$account->isbalance && $account->increaseon == 0)
+			{
+				$html2 .= $html;	
+			}
+			elseif (!$account->isbalance && $account->increaseon == 1)
+			{
+				$html3 .= $html;	
+			}					
+						
+			$xtml .= $html;				
+			$level = $account->id_level; 
+		}	
+	?>
+	
 	<div class="well">
 		<h2><?= Yii::t('app','Balance') ?></h2>
 		<div class="row">
 			<div class="col-md-6">
 				<ul class="nav">
-				<?= ListView::widget([
-					'dataProvider' => $dataProvider,
-					'itemOptions' => ['class' => 'item'],
-					'summary'=>Yii::t('app','List of account codes where increase on receipt or revenues'),
-					'itemView' => function ($model, $key, $index, $widget) {					
-						$html = '';
-						if ($model->isbalance == 1 && $model->increaseon == 0) {
-							$ch = [];
-							$children = $model->accountCodes;
-							foreach($children as $child)
-							{
-								$c = $child->attributes;
-								array_push($ch,$c);	
-							}
-							
-							$html = Account::getHtmlIndex($model->id);
-						}
-						return $html;
-					},
-					/*'itemView'=>'_itemIndex',*/
-				]) ?>
+					<?= $html0 ?>
 				</ul>
 			</div>
 			<div class="col-md-6">
 				<ul class="nav">
-				<?= ListView::widget([
-					'dataProvider' => $dataProvider,
-					'itemOptions' => ['class' => 'item'],
-					'summary'=>Yii::t('app','List of account codes where debet on reduction'),
-					'itemView' => function ($model, $key, $index, $widget) {					
-						$html = '';
-						if ($model->isbalance == 1 && $model->increaseon == 1) {
-							$ch = [];
-							$children = $model->accountCodes;
-							foreach($children as $child)
-							{
-								$c = $child->attributes;
-								array_push($ch,$c);	
-							}
-							
-							$html = Account::getHtmlIndex($model->id);
-						}
-						return $html;
-					},
-					/*'itemView'=>'_itemIndex',*/
-				]) ?>
+					<?= $html1 ?>
 				</ul>
 			</div>		
 		</div>	
@@ -134,55 +155,18 @@ $this->params['breadcrumbs'][] = $this->title;
 		<div class="row">
 			<div class="col-md-6">
 				<ul class="nav">
-				<?= ListView::widget([
-					'dataProvider' => $dataProvider,
-					'itemOptions' => ['class' => 'item'],
-					'summary'=>Yii::t('app','List of account codes where increase on expenses, but has no affect on balance'),
-					'itemView' => function ($model, $key, $index, $widget) {					
-						$html = '';
-						if ($model->isbalance == 0 && $model->increaseon == 0) {
-							$ch = [];
-							$children = $model->accountCodes;
-							foreach($children as $child)
-							{
-								$c = $child->attributes;
-								array_push($ch,$c);	
-							}
-							
-							$html = Account::getHtmlIndex($model->id);
-						}
-						return $html;
-					},
-					/*'itemView'=>'_itemIndex',*/
-				]) ?>
+					<?= $html2 ?>
 				</ul>
 			</div>
 			<div class="col-md-6">
 				<ul class="nav">
-				<?= ListView::widget([
-					'dataProvider' => $dataProvider,
-					'itemOptions' => ['class' => 'item'],
-					'summary'=>Yii::t('app','List of account codes where increase on revenues, but has no affect on balance'),
-					'itemView' => function ($model, $key, $index, $widget) {					
-						$html = '';
-						if ($model->isbalance == 0 && $model->increaseon == 1) {
-							$ch = [];
-							$children = $model->accountCodes;
-							foreach($children as $child)
-							{
-								$c = $child->attributes;
-								array_push($ch,$c);	
-							}
-							
-							$html = Account::getHtmlIndex($model->id);
-						}
-						return $html;
-					},
-					/*'itemView'=>'_itemIndex',*/
-				]) ?>
+					<?= $html3 ?>
 				</ul>
 			</div>		
 		</div>	
-
+	
+	<ul class="nav">
+					<?= $xtml ?>
+				</ul>
 	
 </div>

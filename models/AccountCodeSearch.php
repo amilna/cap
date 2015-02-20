@@ -22,7 +22,12 @@ class AccountCodeSearch extends AccountCode
             [['name'], 'safe'],
         ];
     }
-
+	
+	public static function find()
+	{
+		return parent::find()->where(['{{%cap_account}}.isdel' => 0]);
+	}
+	
     /**
      * @inheritdoc
      */
@@ -41,7 +46,7 @@ class AccountCodeSearch extends AccountCode
      */
     public function search($params)
     {
-        $query = AccountCode::find();
+        $query = $this->find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -57,6 +62,7 @@ class AccountCodeSearch extends AccountCode
             'parent_id' => $this->parent_id,            
             'increaseon' => $this->increaseon,
             'isbalance' => $this->isbalance,
+            'exchangable' => $this->exchangable,
             'isdel' => $this->isdel,
         ]);
 

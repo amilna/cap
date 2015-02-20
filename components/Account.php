@@ -6,7 +6,7 @@ use Yii;
 use yii\base\Component;
 use yii\base\InvalidConfigException;
 use yii\helpers\Html;
-use amilna\cap\models\AccountCode;
+use amilna\cap\models\AccountCodeSearch;
 
 class Account extends Component
 {
@@ -21,7 +21,7 @@ class Account extends Component
 			$search = $name;
 			$sql = 'name = :search';			
 		}
-		$account = AccountCode::find()->where($sql,['search'=>$search])->one();
+		$account = AccountCodeSearch::find()->where($sql,['search'=>$search])->one();
 		
 		/*		
 		$html = '<li>
@@ -33,7 +33,7 @@ class Account extends Component
 		*/
 		
 		$value = 0;			
-		$value = $account->saldo;			
+		$value = $account->sisa*($account->increaseon == 0?1:-1);			
 		if ($account->increaseon == 0) {
 		//	$value = $account->debet;			
 		}
