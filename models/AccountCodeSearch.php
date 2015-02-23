@@ -24,8 +24,8 @@ class AccountCodeSearch extends AccountCode
     }
 	
 	public static function find()
-	{
-		return parent::find()->where([AccountCode::tableName().'.isdel' => 0]);
+	{		
+		return parent::find()->where([AccountCode::tableName().'.isdel' => 0]);													
 	}
 	
     /**

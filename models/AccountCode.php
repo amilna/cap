@@ -96,11 +96,12 @@ class AccountCode extends \yii\db\ActiveRecord
     public function getSaldo()
     {                        				        
         return $this->db->createCommand("SELECT 
-					sum(case when type = 0 then amount else amount*(-1) end) as saldo 
+					sum(case when j.type = 0 then amount else j.amount*(-1) end) as saldo 
 					FROM ".Journal::tableName()." as j
 					LEFT JOIN ".$this->tableName()." as a on j.account_id = a.id
-					WHERE (a.id_left >= :lid AND a.id_right <= :rid) AND j.isdel = :isdel")
-					->bindValues(["isdel"=>0,"lid"=>$this->id_left,"rid"=>$this->id_right])->queryScalar();                
+					LEFT JOIN ".Transaction::tableName()." as t on j.transaction_id = t.id
+					WHERE (a.id_left >= :lid AND a.id_right <= :rid) AND j.isdel = 0 AND t.isdel = 0")
+					->bindValues(["lid"=>$this->id_left,"rid"=>$this->id_right])->queryScalar();                
     }
     
     
