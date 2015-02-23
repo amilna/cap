@@ -57,7 +57,7 @@ class TransactionController extends Controller
 						{
 							$k = explode(":",$a);						
 							$v = (count($k) > 1?$k[1]:$k[0]);
-							$obj[$k[0]] = ($v == "Obj"?json_encode($d->attributes):(isset($d[$v])?$d[$v]:null));
+							$obj[$k[0]] = ($v == "Obj"?json_encode($d->attributes):(isset($d->$v)?$d->$v:null));
 						}
 					}
 				}
@@ -154,25 +154,33 @@ class TransactionController extends Controller
 				}
 						
 				$model->load($post);						
-							
-				if ($model->save()) {
-					
-					foreach (array_merge($debet,$credit) as $d)
-					{					
-						$j = new Journal();	
-						$j->load(["Journal"=>$d]);						
-						$j->remarks = (empty($j->remarks)?$model->remarks." (".$model->tags.")":$j->remarks);
-						$j->transaction_id = $model->id;
-						$j->isdel = 0;					
-						$j->save();			
-					}												
-					
-					return $this->redirect(['view', 'id' => $model->id]);
-				}
-				else {				
 				
-					$model->id = array_merge($debet,$credit);
+				$transaction = Yii::$app->db->beginTransaction();
+				try {				
+					if ($model->save()) {
+						
+						foreach (array_merge($debet,$credit) as $d)
+						{					
+							$j = new Journal();	
+							$j->load(["Journal"=>$d]);						
+							$j->remarks = (empty($j->remarks)?$model->remarks." (".$model->tags.")":$j->remarks);
+							$j->transaction_id = $model->id;
+							$j->isdel = 0;					
+							$j->save();			
+						}												
+						$transaction->commit();	
+						return $this->redirect(['view', 'id' => $model->id]);
+					}
+					else {				
+					
+						$transaction->rollBack();
+						$model->id = array_merge($debet,$credit);
+					}										
+				} catch (Exception $e) {
+					$transaction->rollBack();
 				}
+							
+				
 			}
 			else {				
 			
@@ -217,32 +225,41 @@ class TransactionController extends Controller
 							
 				$model->load($post);				
 				
-				if ($model->save()) {					
-					
-					$js = Journal::find()->where("transaction_id = :id",["id"=>$model->id])->all();
-					foreach ($js as $j)
-					{
-						//$j->delete();
-						$j->isdel = 1;
-						$j->save();
-					}				
-					
-					foreach (array_merge($debet,$credit) as $d)
-					{					
-						$j = Journal::find()->where("transaction_id = :id AND account_id = :aid AND type = :t",["id"=>$model->id,"t"=>intval($d["type"]),"aid"=>intval($d["account_id"])])->one();					
-						if (!$j)
+				$transaction = Yii::$app->db->beginTransaction();
+				try {				
+					if ($model->save()) {					
+						
+						$js = Journal::find()->where("transaction_id = :id",["id"=>$model->id])->all();
+						foreach ($js as $j)
 						{
-							$j = new Journal();	
-						}
-						$j->load(["Journal"=>$d]);	
-						$j->remarks = (empty($j->remarks)?$model->remarks." (".$model->tags.")":$j->remarks);
-						$j->transaction_id = $model->id;
-						$j->isdel = 0;					
-						$j->save();			
-					}												
-										
-					return $this->redirect(['view', 'id' => $model->id]);			
+							//$j->delete();
+							$j->isdel = 1;
+							$j->save();
+						}				
+						
+						foreach (array_merge($debet,$credit) as $d)
+						{					
+							$j = Journal::find()->where("transaction_id = :id AND account_id = :aid AND type = :t",["id"=>$model->id,"t"=>intval($d["type"]),"aid"=>intval($d["account_id"])])->one();					
+							if (!$j)
+							{
+								$j = new Journal();	
+							}
+							$j->load(["Journal"=>$d]);	
+							$j->remarks = (empty($j->remarks)?$model->remarks." (".$model->tags.")":$j->remarks);
+							$j->transaction_id = $model->id;
+							$j->isdel = 0;					
+							$j->save();			
+						}												
+						$transaction->commit();						
+						return $this->redirect(['view', 'id' => $model->id]);			
+					}
+					else {
+						$transaction->rollBack();	
+					}														
+				} catch (Exception $e) {
+					$transaction->rollBack();
 				}
+				
 			}
         } else {
             return $this->render('update', [

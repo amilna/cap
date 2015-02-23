@@ -75,7 +75,7 @@ $this->params['breadcrumbs'][] = $this->title;
 	</div>
 	
 	<?php
-		$level = 0;		
+		$level = 2;		
 		$html0 = "";
 		$html1 = "";
 		$html2 = "";
@@ -93,7 +93,7 @@ $this->params['breadcrumbs'][] = $this->title;
 					$html .= '<ul style="list-style-type: none;padding: 0px;margin-left: 20px;clear:right"><li>';	
 				}
 				
-				$html .= ($account->id_level != 2?$account->code.' - ':'<h4>').Html::a($account->name, ['view', 'id' => $account->id]).'<span class="pull-right">'./*" ".$account->debet."-".$account->credit."= ".*/number_format($value/($div == 0?1:$div),2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]).'</span>'.($account->id_level != 2?'':'</h4>').' ('.$account->id_left.'-'.$account->id_right.'-'.$account->id_level.')';
+				$html .= ($account->id_level != 2?$account->code.' - ':'<h4>').Html::a($account->name, ['view', 'id' => $account->id]).'<span class="pull-right">'./*" ".$account->debet."-".$account->credit."= ".*/number_format($value/($div == 0?1:$div),2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]).'</span>'.($account->id_level != 2?'':'</h4>').' <small>('.$account->id_left.'-'.$account->id_right.'-'.$account->id_level.')</small>';
 			
 			}
 			elseif ($account->id_level < $level)
@@ -103,14 +103,12 @@ $this->params['breadcrumbs'][] = $this->title;
 					$html .= '</li></ul>';	
 				}
 				
-				$html .= ($account->id_level != 2?$account->code.' - ':'<h4>').Html::a($account->name, ['view', 'id' => $account->id]).'<span class="pull-right">'./*" ".$account->debet."-".$account->credit."= ".*/number_format($value/($div == 0?1:$div),2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]).'</span>'.($account->id_level != 2?'':'</h4>').' ('.$account->id_left.'-'.$account->id_right.'-'.$account->id_level.')';
+				$html .= ($account->id_level != 2?$account->code.' - ':'<h4>').Html::a($account->name, ['view', 'id' => $account->id]).'<span class="pull-right">'./*" ".$account->debet."-".$account->credit."= ".*/number_format($value/($div == 0?1:$div),2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]).'</span>'.($account->id_level != 2?'':'</h4>').' <small>('.$account->id_left.'-'.$account->id_right.'-'.$account->id_level.')</small>';
 							
-																							
-				
 			}
 			else
 			{
-				$html .= '<li>'.($account->id_level != 2?$account->code.' - ':'<h4>').Html::a($account->name, ['view', 'id' => $account->id]).'<span class="pull-right">'./*" ".$account->debet."-".$account->credit."= ".*/number_format($value/($div == 0?1:$div),2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]).'</span>'.($account->id_level != 2?'':'</h4>').' ('.$account->id_left.'-'.$account->id_right.'-'.$account->id_level.')</li>';
+				$html .= '<li>'.($account->id_level != 2?$account->code.' - ':'<h4>').Html::a($account->name, ['view', 'id' => $account->id]).'<span class="pull-right">'./*" ".$account->debet."-".$account->credit."= ".*/number_format($value/($div == 0?1:$div),2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]).'</span>'.($account->id_level != 2?'':'</h4>').' <small>('.$account->id_left.'-'.$account->id_right.'-'.$account->id_level.')</small></li>';
 			}						
 						
 			if ($account->isbalance && $account->increaseon == 0)
@@ -165,8 +163,11 @@ $this->params['breadcrumbs'][] = $this->title;
 			</div>		
 		</div>	
 	
+	<?php /*
 	<ul class="nav">
-					<?= $xtml ?>
-				</ul>
+		<?= $xtml ?>
+	</ul>
+	*/
+	?> 
 	
 </div>

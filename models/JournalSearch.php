@@ -17,7 +17,7 @@ class JournalSearch extends Journal
     public $subject;
     public $tags;
     public $transactionRemarks;
-    public $account;
+    public $accountName;
     
     /**
      * @inheritdoc
@@ -26,11 +26,17 @@ class JournalSearch extends Journal
     {
         return [
             [['id', 'account_id', 'transaction_id', 'type', 'isdel'], 'integer'],
-            [['quantity','remarks','time','title','subject','tags','transactionRemarks','account'], 'safe'],
-            [[ 'amount'], 'number'],
+            [['amount','quantity','remarks','time','title','subject','tags','transactionRemarks','accountName'], 'safe'],
+            //[[ 'amount'], 'number'],
         ];
     }
-
+	
+	public static function find()
+	{
+		return parent::find()->where([Journal::tableName().'.isdel' => 0])						
+							->andWhere(Transaction::tableName().".isdel = 0");
+	}
+	
     /**
      * @inheritdoc
      */
@@ -42,8 +48,11 @@ class JournalSearch extends Journal
 	
 	public function attributeLabels()
     {
+        $module = Yii::$app->getModule("cap");
+        
         return [            
-            'code' => Yii::t('app', 'Account'),            
+            'code' => Yii::t('app', 'Account'), 
+            'amount'=> Yii::t('app', 'Amount')." in ".$module->currency['symbol'],//'Debet | Credit', //'Debet__________Credit'
         ];
     }
 	
@@ -71,19 +80,28 @@ class JournalSearch extends Journal
 			$tab = isset($afield[1])?$afield[1]:false;			
 			if (!empty($this->$field))
 			{				
-				$number = explode(" ",$this->$field);			
+				$number = explode(" ",trim($this->$field));							
 				if (count($number) == 2)
 				{									
-					array_push($params,[$number[0], ($tab?$tab.".":"").$field, $number[1]]);	
+					if (in_array($number[0],['>','>=','<','<=']) && is_numeric($number[1]))
+					{
+						array_push($params,[$number[0], ($tab?$tab.".":"").$field, $number[1]]);	
+					}
 				}
-				elseif (count($number) > 2)
+				elseif (count($number) == 3)
 				{															
-					array_push($params,['>=', ($tab?$tab.".":"").$field, $number[0]]);		
-					array_push($params,['<=', ($tab?$tab.".":"").$field, $number[0]]);		
+					if (is_numeric($number[0]) && is_numeric($number[2]))
+					{
+						array_push($params,['>=', ($tab?$tab.".":"").$field, $number[0]]);		
+						array_push($params,['<=', ($tab?$tab.".":"").$field, $number[2]]);		
+					}
 				}
-				else
+				elseif (count($number) == 1)
 				{					
-					array_push($params,['=', ($tab?$tab.".":"").$field, str_replace(["<",">","="],"",$number[0])]);		
+					if (is_numeric($number[0]))
+					{
+						array_push($params,['=', ($tab?$tab.".":"").$field, str_replace(["<",">","="],"",$number[0])]);		
+					}	
 				}									
 			}
 		}	
@@ -130,7 +148,7 @@ class JournalSearch extends Journal
      */
     public function search($params)
     {
-        $query = Journal::find();
+        $query = $this->find();
 				
 		$query->joinWith(['transaction','account']);
 		
@@ -163,7 +181,7 @@ class JournalSearch extends Journal
 			'desc' => ['{{%cap_transaction}}.remarks' => SORT_DESC],
 		];
 		
-		$dataProvider->sort->attributes['account'] = [			
+		$dataProvider->sort->attributes['accountName'] = [			
 			'asc' => ['{{%cap_account}}.code' => SORT_ASC],
 			'desc' => ['{{%cap_account}}.code' => SORT_DESC],
 		];
@@ -182,7 +200,7 @@ class JournalSearch extends Journal
             'isdel' => $this->isdel,
         ]);				
 				
-		$params = self::queryNumber([['quantity']]);		
+		$params = self::queryNumber([['quantity'],['amount']]);		
 		foreach ($params as	$p)
 		{
 			$query->andFilterWhere($p);
@@ -207,7 +225,7 @@ class JournalSearch extends Journal
 		}	
 			
         $query->andFilterWhere(['like', 'lower({{%cap_transaction}}.remarks)', strtolower($this->transactionRemarks)])
-			->andFilterWhere(['like', "lower(concat({{%cap_account}}.code,' - ',{{%cap_account}}.name))", strtolower($this->account)]);
+			->andFilterWhere(['like', "lower(concat({{%cap_account}}.code,' - ',{{%cap_account}}.name))", strtolower($this->accountName)]);
 
         return $dataProvider;
     }

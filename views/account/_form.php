@@ -10,8 +10,6 @@ use kartik\widgets\SwitchInput;
 /* @var $model amilna\cap\models\AccountCode */
 /* @var $form yii\widgets\ActiveForm */
 
-//$listParent = []+ArrayHelper::map(($model->isNewRecord?$model->parents():$model->parents($model->id)), 'id', 'name');
-//$listParent = ArrayHelper::map($model->search()->find()->andWhere($model->isNewRecord?"":"id != :id",["id"=>$model->id])->all(), 'id', 'name');
 $listParent = ArrayHelper::map($model->search()->find()
 			->select(["id","concat( code ,'-', name ) as name"])
 			->andWhere($model->isNewRecord?"":"id != :id",$model->isNewRecord?[]:["id"=>$model->id])
@@ -32,8 +30,7 @@ $listParent = ArrayHelper::map($model->search()->find()
     </div>
     
     <div class="row">
-		<div class="col-sm-5">
-    <?/*= $form->field($model, 'parent_id')->dropDownList($listParent,['maxlength' => 255])*/?>    
+		<div class="col-sm-5">       
     <?= $form->field($model, 'parent_id')->widget(Select2::classname(), [
 		'model'=>$model,
 		'attribute'=>'parent_id',

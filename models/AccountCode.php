@@ -29,14 +29,7 @@ class AccountCode extends \yii\db\ActiveRecord
     {
         return '{{%cap_account}}';
     }
-	
-	
-	
-	/*
-	public static function find()
-	{
-		return parent::find()->where(['{{%cap_account}}.isdel' => 0]);
-	}*/
+		
 	
     /**
      * @inheritdoc
@@ -101,100 +94,20 @@ class AccountCode extends \yii\db\ActiveRecord
     }
     
     public function getSaldo()
-    {                        		
-		
-        $res = $this->db->createCommand("SELECT 
-					sum(case when type = 0 then amount else amount*(-1) end) as saldo,sum(case when type = 0 then amount else 0 end) as debet,sum(case when type = 1 then amount else 0 end) as credit 
+    {                        				        
+        return $this->db->createCommand("SELECT 
+					sum(case when type = 0 then amount else amount*(-1) end) as saldo 
 					FROM ".Journal::tableName()." as j
 					LEFT JOIN ".$this->tableName()." as a on j.account_id = a.id
 					WHERE (a.id_left >= :lid AND a.id_right <= :rid) AND j.isdel = :isdel")
-					->bindValues(["isdel"=>0,"lid"=>$this->id_left,"rid"=>$this->id_right])->queryScalar();
-        
-        return ($res == null?0:$res);        
+					->bindValues(["isdel"=>0,"lid"=>$this->id_left,"rid"=>$this->id_right])->queryScalar();                
     }
     
-    public function getCredit()
-    {                       		
-		$res = $this->db->createCommand("SELECT 
-					sum(amount) 
-					FROM ".Journal::tableName()." 
-					WHERE account_id = :aid AND type = 1 AND isdel = :isdel")
-					->bindValues(["isdel"=>0,"aid"=>$this->id])->queryScalar();		
-		
-		
-		$tot = 0;
-		foreach ($this->accountCodes as $a)
-		{
-			$tot += $a->credit;	
-		}
-		
-		$res += $tot;		
-        
-        return ($res == null?0:$res);        
-    }
-    
-    public function getDebet()
-    {                                
-		$res = $this->db->createCommand("SELECT 
-					sum(amount) 
-					FROM ".Journal::tableName()." 
-					WHERE account_id = :aid AND type = 0 AND isdel = :isdel")
-					->bindValues(["isdel"=>0,"aid"=>$this->id])->queryScalar();				
-		
-		$tot = 0;
-		foreach ($this->accountCodes as $a)
-		{
-			$tot += $a->debet;	
-		}
-		
-		$res += $tot;		
-        
-        return ($res == null?0:$res);        
-    }
-    
-    public function getTotal()
-    {                
-        $query =  new \yii\db\Query;
-        $res = $query->select("sum(amount)")
-				->from(Journal::tableName())
-				->where("account_id = ".$this->id." AND isdel = 0")
-				->scalar();						
-						
-		$tot = 0;
-		foreach ($this->accountCodes as $a)
-		{
-			$tot += $a->total;	
-		}
-		
-		$res += $tot;		
-        
-        return ($res == null?0:$res);        
-    }
-    
-    public function getChildTotal()
-    {                                        
-        $query =  new \yii\db\Query;
-        $query->select("sum(amount)")
-				->from(Journal::tableName()." as j")
-				->leftJoin(AccountCode::tableName()." as a","a.id = j.account_id")
-				->leftJoin(AccountCode::tableName()." as c","a.parent_id = c.id")
-				->where("c.id = ".$this->id." AND isdel = 0");
-				
-		$res = $query->scalar();		
-        
-        return ($res == null?0:$res);        
-    }
     
     public function search()
     {
 		return new AccountCodeSearch();
-	}
-    
-    public function	parents($id = false)
-    {
-		return AccountCodeSearch::findBySql("SELECT id,case when code < 0 then name else concat(code,' - ',name) end as name FROM ".AccountCode::tableName().($id?" WHERE id != :id":"")." order by name",($id?['id'=>$id]:[]))->all();		
-		//return AccountCodeSearch::find()->BySql("SELECT id,case when code < 0 then name else concat(code,' - ',name) end as name FROM ".AccountCode::tableName().($id?" WHERE id != :id":"")." order by name",($id?['id'=>$id]:[]))->all();		
-	}	
+	}        
 	
 	public function itemAlias($list,$item = false,$bykey = false)
 	{
@@ -372,21 +285,16 @@ class AccountCode extends \yii\db\ActiveRecord
 			else
 			{		
 				$op = ( ($pLeft - $left) < 0?"+":"-");
-			}
-				
-			//$lmin = $opLeft?min($pLeft,$opLeft):$pLeft;
-			//$lmax = $opLeft?max($pLeft,$opLeft):false;					
+			}							
 			
-			$lmin = $left>0?min($pLeft,$left):$pLeft;
-			//$lmax = $opRight?max($pRight,$right):false;
+			$lmin = $left>0?min($pLeft,$left):$pLeft;			
 			$lmax = $opLeft?max($pLeft,$left):false;					
 			
-			$rmin = $right>0?min($pRight,$right):$pLeft;
-			$rmax = $opLeft?max($pLeft,$left):false;
+			$rmin = $lmin;
+			$rmax = $lmax;
 			
 			$rLeft = 'id_left > '.$lmin.($lmax?' AND id_left <= '.$lmax:'');
-			$rRight = 'id_right >= '.$rmin.($rmax?' AND id_right < '.$rmax:'');
-			//$rRight = 'id_left >= '.$lmin.($lmax?' AND id_left <= '.$lmax:'');
+			$rRight = 'id_right >= '.$rmin.($rmax?' AND id_right < '.$rmax:'');			
 			$data = 'id_left >= '.$left.' AND id_left < '.$right;		
 			
 			if ($this->isdel == 1)
@@ -397,8 +305,7 @@ class AccountCode extends \yii\db\ActiveRecord
 			}
 			else
 			{										
-				$vRest = "(".($right-$left+1).")";
-				//$vChild = "(".$left.")+(".$pLeft.(($pLeft - $left) > 0 && $left > 0?$op.$vRest:"").$op."1)";
+				$vRest = "(".($right-$left+1).")";				
 				$vChild = "(".$left.")+(".$pLeft.(($pLeft - $left) > 0 && $left > 0?$op.$vRest:"")."+1)";
 				$vLevel = "(".$level.")+".($pLevel+1);
 			}

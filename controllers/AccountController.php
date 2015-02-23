@@ -37,8 +37,8 @@ class AccountController extends Controller
         
         $query = $dataProvider->query;                      
         $query->andwhere('id_left > 1')
-			//->orderBy('id_right desc');
-			->orderBy('id_left');
+			->orderBy('id_right desc');
+			//->orderBy('id_left');
 			
 		$dataProvider->pagination = false;	
         
@@ -109,30 +109,39 @@ class AccountController extends Controller
 			fclose($handle);
 		}	
 		
-		foreach ($data as $d)
-		{
-			$model = AccountCode::findOne(["code"=>$d["NOPER"]]);	
-			if (!$model)
+		$transaction = Yii::$app->db->beginTransaction();
+		try {				
+					
+			foreach ($data as $d)
 			{
-				$model = new AccountCode();
-				$model->code = $d["NOPER"]."";
-				$model->name = $d["NAPER"]."";
-				$model->isdel = 0;
-				$parent_id = null;
-				$parent = AccountCode::findOne(["code"=>$d["CODE"]]);
-				if ($parent)
+				$model = AccountCode::findOne(["code"=>$d["NOPER"]]);	
+				if (!$model)
 				{
-					$parent_id = $parent->id;	
+					$model = new AccountCode();
+					$model->code = $d["NOPER"]."";
+					$model->name = $d["NAPER"]."";
+					$model->isdel = 0;
+					$parent_id = null;
+					$parent = AccountCode::findOne(["code"=>$d["CODE"]]);
+					if ($parent)
+					{
+						$parent_id = $parent->id;	
+					}
+					$model->parent_id = $parent_id;
+					$model->increaseon = (in_array(substr($model->code,0,1),["1","5"])?0:1);
+					$model->isbalance = (in_array(substr($model->code,0,1),["4","5"])?0:1);				
+					$model->exchangable = (in_array(substr($model->code,0,1),["1"])?1:0);				
+					$model->save();				
 				}
-				$model->parent_id = $parent_id;
-				$model->increaseon = (in_array(substr($model->code,0,1),["1","5"])?0:1);
-				$model->isbalance = (in_array(substr($model->code,0,1),["4","5"])?0:1);				
-				$model->exchangable = (in_array(substr($model->code,0,1),["1"])?1:0);				
-				$model->save();				
 			}
+					
+			$transaction->commit();		
+			return $this->redirect(['index']);					
+		} catch (Exception $e) {
+			$transaction->rollBack();
+			die('Error saat import');
 		}
-		
-		return $this->redirect(['index']);					
+				
     }
 
     /**
@@ -155,13 +164,18 @@ class AccountController extends Controller
 			$model->attributes = $attr;	
 		}
 		*/ 		
-				
-        if (Yii::$app->request->post()) {						
-			$model->load(Yii::$app->request->post());						
-			if ($model->save()) {				
+		
+        if ($model->load(Yii::$app->request->post()))
+		{
+			$transaction = Yii::$app->db->beginTransaction();
+			try {				
+				$model->save();
+				$transaction->commit();
 				return $this->redirect(['view', 'id' => $model->id]);
+			} catch (Exception $e) {
+				$transaction->rollBack();
 			}
-        }
+		}
         
 		return $this->render('create', [
 			'model' => $model
@@ -179,13 +193,21 @@ class AccountController extends Controller
     {
         $model = $this->findModel($id);								
 		
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
-        } else {
-            return $this->render('update', [
-                'model' => $model
-            ]);
-        }
+		if ($model->load(Yii::$app->request->post()))
+		{
+			$transaction = Yii::$app->db->beginTransaction();
+			try {				
+				$model->save();
+				$transaction->commit();
+				return $this->redirect(['view', 'id' => $model->id]);
+			} catch (Exception $e) {
+				$transaction->rollBack();
+			}
+		}
+		
+        return $this->render('update', [
+			'model' => $model
+		]);
         		        
     }
 
@@ -198,10 +220,17 @@ class AccountController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        //$model->delete();
-        $model->isdel = 1;
-        $model->save();
-
+        
+        $transaction = Yii::$app->db->beginTransaction();
+		try {				
+			//$model->delete();
+			$model->isdel = 1;
+			$model->save();
+			$transaction->commit();		
+		} catch (Exception $e) {
+			$transaction->rollBack();
+		}
+        
         return $this->redirect(['index']);
     }
 

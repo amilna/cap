@@ -19,7 +19,8 @@ $this->params['breadcrumbs'][] = $this->title;
 $dataProvider->pagination = [
                 'pageSize' => 10,
             ];
-            
+
+$module = Yii::$app->getModule('cap');									            
 $tra = new Transaction();            
 ?>
 <div class="journal-index">
@@ -65,7 +66,8 @@ $tra = new Transaction();
 			[
 				'columns'=>[
 					['content'=>'Transaction', 'options'=>['colspan'=>6, 'class'=>'text-center','style'=>'background-color: #fdfdfd']], 
-					['content'=>'Account', 'options'=>['colspan'=>6, 'class'=>'text-center','style'=>'background-color: #fdfdfd']], 					
+					['content'=>'Account', 'options'=>['colspan'=>3, 'class'=>'text-center','style'=>'background-color: #fdfdfd']], 					
+					['content'=>'<div class="row-fluid" style="width:260px"><div class="col-xs-6" style="padding:0 2px 0 2px;">Debet</div><div class="col-xs-6" style="padding:0 2px 0 2px;">Credit</div></div>', 'options'=>['colspan'=>1, 'class'=>'text-centers','style'=>'background-color: #fdfdfd;text-align:right;']], 					
 				],
 				'options'=>['class'=>'skip-export'] // remove this row from export
 			]
@@ -115,9 +117,9 @@ $tra = new Transaction();
 				'value' => 'transaction.remarks'
 			],
             [				
-				'attribute'=>'account',				
-				'value'=>function($data){										
-					return ($data->account->code < 0?"":$data->account->code." - ").$data->account->name;
+				'attribute'=>'accountName',				
+				'value'=>function($data){															
+					return ($data->account->code < 0?"":$data->account->code." - ").$data->account->name;					
 				},
 				'filterType'=>GridView::FILTER_SELECT2,				
 				'filterWidgetOptions'=>[
@@ -141,6 +143,7 @@ $tra = new Transaction();
 				'pageSummaryFunc'=>'sum'
 				
 			],
+			/*
             [				
 				'attribute' => 'debet',
 				'value'=>function($data){										
@@ -162,25 +165,33 @@ $tra = new Transaction();
 				},
 				'pageSummaryFunc'=>'sum'
 				
-			],
+			],*/
             [				
-				'attribute' => 'credit',
-				'value'=>function($data){										
-					$module = Yii::$app->getModule('cap');									
-					return number_format($data->credit,2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]);
+				'attribute' => 'amount',				
+				'format'=>'html',
+				'value'=>function($data) use ($module){																				
+					$html = '<div class="col-xs-6" style="padding:0 2px 0 2px;" >'.number_format($data->debet,2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]).'</div>';
+					$html .= '<div class="col-xs-6" style="padding:0 2px 0 2px;" >'.number_format($data->credit,2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]).'</div>';
+					return '<div class="row-fluid" style="width:260px">'.$html.'</div>';					
 				},				
-				'mergeHeader'=>true,
-				'headerOptions'=>['class'=>'kv-align-middle'],
+				//'mergeHeader'=>true,
+				'headerOptions'=>['class'=>'kv-align-bottom','style'=>'text-align:center;'],
 				'hAlign'=>'right',
 				'vAlign'=>'top',
 				'pageSummary'=>function ($summary, $data, $widget) { 					
 					$module = Yii::$app->getModule('cap');
-					$r = 0;
+					$db = 0;
+					$cr = 0;
 					foreach($data as $d)
 					{
-						$r += floatval(str_replace($module->currency["thousand_separator"],"",$d));
+						$ds = explode('</div>',$d);						
+						$db += floatval(str_replace($module->currency["thousand_separator"],"",(substr($ds[0],strrpos($ds[0]," >")+2))));
+						$cr += floatval(str_replace($module->currency["thousand_separator"],"",(substr($ds[1],strrpos($ds[1]," >")+2))));												
 					}
-					return number_format($r,2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]);
+					
+					$html = '<div class="col-xs-6" style="padding:0 2px 0 2px;" >'.number_format($db,2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]).'</div>';
+					$html .= '<div class="col-xs-6" style="padding:0 2px 0 2px;" >'.number_format($cr,2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]).'</div>';
+					return '<div class="row-fluid" style="width:260px">'.$html.'</div>';					
 				},
 				
 			],

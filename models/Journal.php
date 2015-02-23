@@ -27,12 +27,7 @@ class Journal extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return '{{%cap_journal}}';
-    }
-	
-	public static function find()
-	{
-		return parent::find()->where(['{{%cap_journal}}.isdel' => 0]);
-	}
+    }		
 	
     /**
      * @inheritdoc

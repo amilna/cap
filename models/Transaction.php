@@ -29,12 +29,7 @@ class Transaction extends \yii\db\ActiveRecord
     public static function tableName()
     {
         return '{{%cap_transaction}}';
-    }
-	
-	public static function find()
-	{
-		return parent::find()->where(['{{%cap_transaction}}.isdel' => 0]);
-	}
+    }		
 	
     /**
      * @inheritdoc
@@ -73,15 +68,26 @@ class Transaction extends \yii\db\ActiveRecord
 
     public function	accounts($increaseon = false,$usedAccounts = [])
     {
-		//return AccountCode::find()->with('accountCodes')->where("increaseon = :increaseon",['increaseon'=>$increaseon])->orderBy("code")->all();		
+		
+		/*
 		$rows = (new \yii\db\Query())
-				->select(["t.id AS id", "case when (t.code < 0) then t.name else concat (t.code,' - ',t.name) end as name,t.increaseon,t.isbalance"])
+				->select(["t.id AS id", "case when (t.code < 0) then t.name else concat (t.code,' - ',t.name) end as name,t.increaseon,t.isbalance,t.exchangable"])
 				->from(AccountCode::tableName()." AS t")
 				->leftJoin(AccountCode::tableName()." AS a", "t.id = a.parent_id")
 				->where(($increaseon?"t.increaseon = :increaseon AND ":"")."a.id is null AND not (t.id = ANY(array".json_encode($usedAccounts)."::integer[]))",$increaseon?['increaseon'=>$increaseon]:[])
 				->orderBy("name")
 				->all();
+		*/
+		
 				
+		$rows = AccountCodeSearch::find()
+				->select(["".AccountCode::tableName().".id AS id", "case when (".AccountCode::tableName().".code < 0) then ".AccountCode::tableName().".name else concat (".AccountCode::tableName().".code,' - ',".AccountCode::tableName().".name) end as name,".AccountCode::tableName().".increaseon,".AccountCode::tableName().".isbalance,".AccountCode::tableName().".exchangable"])				
+				->leftJoin(AccountCode::tableName()." AS a", AccountCode::tableName().".id = a.parent_id")				
+				->andWhere(($increaseon?"".AccountCode::tableName().".increaseon = :increaseon AND ":"")."a.id is null AND not (".AccountCode::tableName().".id = ANY(array".json_encode($usedAccounts)."::integer[]))",$increaseon?['increaseon'=>$increaseon]:[])				
+				->orderBy("name")
+				->asArray()
+				->all();								
+		
 		return $rows;		
 	}	
 	
@@ -148,23 +154,30 @@ class Transaction extends \yii\db\ActiveRecord
 		return $tags;
 	}
 	
-	public function getAmount()
+	public function getCashFlow()
 	{
-		return $this->total*(in_array($this->type,[0,1,3])?1:-1);
+		return $this->total*($this->itemAlias('cashFlow',$this->type));
 	}
 	
 	public function itemAlias($list,$item = false,$bykey = false)
 	{
 		$lists = [
 			'type'=>[							
-							0=>Yii::t('app','Transfers'),
-							3=>Yii::t('app','Receipt'),
-							4=>Yii::t('app','Reduction'),
-							1=>Yii::t('app','Revenues'),
-							2=>Yii::t('app','Expenses'),
-							5=>Yii::t('app','Assets buying'),
-							
-						],			
+						1=>Yii::t('app','Transfers'),
+						2=>Yii::t('app','Receipt'),
+						3=>Yii::t('app','Assets buying'),							
+						4=>Yii::t('app','Expenses'),
+						5=>Yii::t('app','Reduction'),							
+						//6=>Yii::t('app','Revenues'),							
+					],			
+			'cashFlow'=>[							
+						1=>0,
+						2=>1,
+						3=>-1,							
+						4=>-1,
+						5=>-1,							
+						//6=>1,							
+					],		
 		];				
 		
 		if (isset($lists[$list]))

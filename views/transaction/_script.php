@@ -2,6 +2,7 @@
 
 use yii\helpers\Url;
 $module = Yii::$app->getModule('cap');
+
 ?>
 <script type="text/javascript">
 <?php $this->beginBlock('JS_END') ?>
@@ -12,39 +13,57 @@ $module = Yii::$app->getModule('cap');
 		function filterOptions(tipe,increaseon)
 		{											
 			var cek = function(a){									
-					return ( a["increaseon"] == 0 && a["isbalance"] == true 							
+					return ( a["increaseon"] == (increaseon == "debet"?0:1)
 							?true:false);
 				};
-				
+			
 			if (tipe == 1)
-			{
-				var cek = function(a){									
-					return ( a["increaseon"] == (increaseon == "debet"?0:1) && a["isbalance"] == (increaseon == "debet"?true:false) 							
-							?true:false);
-				};
+			{				
+				var cek = function(a){
+					return ( (increaseon == "debet"? a["increaseon"] == 0 && a["isbalance"] && a["exchangable"] : false) ||					
+							(increaseon != "debet"? a["increaseon"] == 0 && a["isbalance"] && a["exchangable"] : false)
+							?true:false);																			
+				};		
 			}
 			else if (tipe == 2)
-			{
-				var cek = function(a){									
-					return ( a["increaseon"] == 0 && a["isbalance"] == (increaseon == "debet"?false:true) 							
-							?true:false);
-				};		
-			}										
-			else if (tipe == 3)
 			{				
-				var cek = function(a){									
-					return ( a["increaseon"] == (increaseon == "debet"?0:1)
-					//return ( a["increaseon"] == (increaseon == "debet"?0:1) && a["isbalance"] == (increaseon == "debet"?true:false) 
-							//|| a["increaseon"] == (increaseon == "debet"?0:1) && a["isbalance"] == true 
-							?true:false);
+				var cek = function(a){
+					return ( (increaseon == "debet"? a["increaseon"] == 0 && a["isbalance"] && a["exchangable"] : false) ||					
+							(increaseon != "debet"? a["increaseon"] == 1 : false)
+							?true:false);																			
 				};		
 			}
+			else if (tipe == 3)
+			{
+				var cek = function(a){									
+					return ( (increaseon == "debet"? a["increaseon"] == 0 && a["isbalance"] && !a["exchangable"] : false) ||					
+							(increaseon != "debet"? a["increaseon"] == 0 && a["isbalance"] && a["exchangable"] : false)
+							?true:false);																			
+				};
+			}	
 			else if (tipe == 4)
 			{
 				var cek = function(a){									
-					return ( a["increaseon"] == (increaseon == "debet"?1:0) && a["isbalance"] == true 							
-							?true:false);
-				};		
+					return ( (increaseon == "debet"? a["increaseon"] == 0 && !a["isbalance"] : false) ||					
+							(increaseon != "debet"? a["increaseon"] == 0 && a["isbalance"] && a["exchangable"] : false)
+							?true:false);																			
+				};
+			}
+			else if (tipe == 5)
+			{
+				var cek = function(a){									
+					return ( (increaseon == "debet"? a["increaseon"] == 1 && a["isbalance"] : false) ||					
+							(increaseon != "debet"? a["increaseon"] == 0 && a["isbalance"] : false)
+							?true:false);																			
+				};
+			}													
+			else if (tipe == 6)
+			{
+				var cek = function(a){									
+					return ( (increaseon == "debet"? a["increaseon"] == 0 && a["isbalance"] && a["exchangable"] : false) ||					
+							(increaseon != "debet"? a["increaseon"] == 1 && !a["isbalance"] : false)
+							?true:false);																			
+				};
 			}
 			
 			$(".transaction-"+increaseon+"-account option").each(function(i,d){

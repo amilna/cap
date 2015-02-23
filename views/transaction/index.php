@@ -112,8 +112,30 @@ $this->params['breadcrumbs'][] = $this->title;
 				'attribute' => 'total',				
 				'value'=>function($data){										
 					$module = Yii::$app->getModule('cap');
-					return number_format($data->amount,2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]);
+					return number_format($data->total,2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]);
 				},				
+				'hAlign'=>'right',
+				'pageSummary'=>function ($summary, $data, $widget) { 					
+					$module = Yii::$app->getModule('cap');
+					$r = 0;
+					foreach($data as $d)
+					{
+						$r += floatval(str_replace($module->currency["thousand_separator"],"",$d));
+					}
+					return number_format($r,2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]);
+				},
+				//'pageSummaryFunc'=>'sum'
+				
+			],
+            [				
+				'attribute' => 'cashFlow',				
+				'value'=>function($data){										
+					$module = Yii::$app->getModule('cap');
+					return number_format($data->cashFlow,2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]);
+				},				
+				'mergeHeader'=>true,
+				'headerOptions'=>['class'=>'kv-align-middle','style'=>'text-align:center;'],
+				'vAlign'=>'top',
 				'hAlign'=>'right',
 				'pageSummary'=>function ($summary, $data, $widget) { 					
 					$module = Yii::$app->getModule('cap');

@@ -21,42 +21,20 @@ class Account extends Component
 			$search = $name;
 			$sql = 'name = :search';			
 		}
-		$account = AccountCodeSearch::find()->where($sql,['search'=>$search])->one();
-		
-		/*		
-		$html = '<li>
-					'.Html::a(Html::encode($account->name." ".$account->total), ['view', 'id' => $account->id]).'
-					<a data-toggle="collapse" href="#account-codes-'.$account->id.'">
-						 <span class="fa fa-caret-down pull-right"> V </span>
-					</a>		  
-					<ul id="account-codes-'.$account->id.'" class="nav collapse">';
-		*/
+		$account = AccountCodeSearch::find()->where($sql,['search'=>$search])->one();				
 		
 		$value = 0;			
-		$value = $account->sisa*($account->increaseon == 0?1:-1);			
-		if ($account->increaseon == 0) {
-		//	$value = $account->debet;			
-		}
-		else {
-		//	$value = $account->credit;			
-		}
-		
+		$value = $account->sisa*($account->increaseon == 0?1:-1);					
 					
-		$div = pow(10,max(0,(floor((strlen($account->max."")-1)/3)))*3);
-		/*$html = '<li>
-					'.($account->parent_id != null?'<span class="row"><span class="col-xs-10 ">'.$account->code.' - ':'<h4><span class="col-xs-10 ">').Html::a($account->name, ['view', 'id' => $account->id]).'</span><span class="col-xs-2 pull-right">'.number_format($value/($div == 0?1:$div),2,",",".").'</span>'.($account->parent_id != null?'':'</h4>').'</span>					
-					<ul id="account-codes-'.$account->id.'" class="navs list-unstyled" style="clear:right">';			
-		*/			
+		$div = pow(10,max(0,(floor((strlen($account->max."")-1)/3)))*3);		
 		$html = '<li>
 					'.($account->parent_id != null?$account->code.' - ':'<h4>').Html::a($account->name, ['view', 'id' => $account->id]).'<span class="pull-right">'./*" ".$account->debet."-".$account->credit."= ".*/number_format($value/($div == 0?1:$div),2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]).'</span>'.($account->parent_id != null?'':'</h4>').'
 					<ul id="account-codes-'.$account->id.'" class="navs" style="clear:right">';						
 		
 		$children = $account->accountCodes;	  
 		foreach($children as $child)
-		{
-			
-				  $html .= Account::getHtmlIndex($child->id);
-			  
+		{			
+			$html .= Account::getHtmlIndex($child->id);			  
 		}
 		
 		$html .= '	</ul>														
