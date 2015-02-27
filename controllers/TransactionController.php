@@ -231,15 +231,25 @@ class TransactionController extends Controller
 				try {				
 					if ($model->save()) {					
 						
+						$all = array_merge($debet,$credit);						
 						$js = Journal::find()->where("transaction_id = :id",["id"=>$model->id])->all();
 						foreach ($js as $j)
 						{
-							//$j->delete();
-							$j->isdel = 1;
-							$j->save();
-						}				
+							//$j->delete();				
+							
+							$ada = false;			
+							foreach ($all as $key => $val) {
+								if ($val['account_id'] == $j->account_id && $val['type'] == $j->type && $val['amount'] > 0) {
+									$ada = true;									
+								}
+							}
+							if (!$ada && $j->isdel == 0) {
+								$j->isdel = 1;
+								$j->save();								
+							}
+						}												
 						
-						foreach (array_merge($debet,$credit) as $d)
+						foreach ($all as $d)
 						{					
 							$j = Journal::find()->where("transaction_id = :id AND account_id = :aid AND type = :t",["id"=>$model->id,"t"=>intval($d["type"]),"aid"=>intval($d["account_id"])])->one();					
 							if (!$j)
@@ -249,8 +259,11 @@ class TransactionController extends Controller
 							$j->load(["Journal"=>$d]);	
 							$j->remarks = (empty($j->remarks)?$model->remarks." (".$model->tags.")":$j->remarks);
 							$j->transaction_id = $model->id;
-							$j->isdel = 0;					
-							$j->save();			
+							if ($j->amount > 0)
+							{
+								$j->isdel = 0;					
+								$j->save();			
+							}
 						}												
 						$transaction->commit();						
 						return $this->redirect(['view', 'id' => $model->id]);			

@@ -216,7 +216,7 @@ class Transaction extends \yii\db\ActiveRecord
      */
     public function getJournals()
     {
-        return $this->hasMany(Journal::className(), ['transaction_id' => 'id']);
+        return $this->hasMany(Journal::className(), ['transaction_id' => 'id'])->where("isdel=0");
     }
     
     public function toMoney($value = false)

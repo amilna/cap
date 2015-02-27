@@ -7,8 +7,7 @@ $module = Yii::$app->getModule('cap');
 <script type="text/javascript">
 <?php $this->beginBlock('JS_END') ?>
 		var accounts = <?= json_encode($model->accounts()) ?>;
-		var journals = <?= \yii\helpers\Json::encode($model->isNewRecord?$model->id:$model->journals) ?>;
-		var usedaccounts = [];
+		var journals = <?= \yii\helpers\Json::encode($model->isNewRecord?$model->id:$model->journals) ?>;		
 		
 		function filterOptions(tipe,increaseon)
 		{											
@@ -65,6 +64,8 @@ $module = Yii::$app->getModule('cap');
 							?true:false);																			
 				};
 			}
+			
+			var usedaccounts = [];
 			
 			$(".transaction-"+increaseon+"-account option").each(function(i,d){
 				
