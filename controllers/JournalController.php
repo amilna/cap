@@ -63,6 +63,7 @@ class JournalController extends Controller
         return $this->redirect(['index']);
         
         $model = new Journal();
+        $model->isdel = 0;
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);

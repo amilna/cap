@@ -152,7 +152,7 @@ class AccountController extends Controller
     public function actionCreate()
     {
         $model = new AccountCode();				
-        
+        $model->isdel = 0;
         /*
         $get = Yii::$app->request->get();
         if (isset($get['attributes']))

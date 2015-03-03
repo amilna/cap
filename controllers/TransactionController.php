@@ -134,12 +134,13 @@ class TransactionController extends Controller
     public function actionCreate()
     {
         $model = new Transaction();	
-        $model->time = date("Y/m/d H:i:s");	
+        $model->time = date("Y/m/d H:i:s");
+        $model->isdel = 0;	
 		                       		
         if (Yii::$app->request->post()) {						
 			$post = Yii::$app->request->post();						
-			$debet = $post['Transaction']['debet'];
-			$credit = $post['Transaction']['credit'];																								
+			$debet = (isset($post['Transaction']['debet'])?$post['Transaction']['debet']:[]);
+			$credit = (isset($post['Transaction']['credit'])?$post['Transaction']['credit']:[]);
 			
 			$p = $post['Transaction'];			
 			
@@ -156,7 +157,7 @@ class TransactionController extends Controller
 				}
 						
 				$model->load($post);						
-				
+				$model->total = ($model->total == null?0:$model->total);
 				$transaction = Yii::$app->db->beginTransaction();
 				try {				
 					if ($model->save()) {
@@ -208,8 +209,8 @@ class TransactionController extends Controller
 		
         if (Yii::$app->request->post()) {						
 			$post = Yii::$app->request->post();
-			$debet = $post['Transaction']['debet'];
-			$credit = $post['Transaction']['credit'];																		
+			$debet = (isset($post['Transaction']['debet'])?$post['Transaction']['debet']:[]);
+			$credit = (isset($post['Transaction']['credit'])?$post['Transaction']['credit']:[]);
 			
 			$p = $post['Transaction'];									
 			
@@ -226,7 +227,7 @@ class TransactionController extends Controller
 				}
 							
 				$model->load($post);				
-				
+				$model->total = ($model->total == null?0:$model->total);
 				$transaction = Yii::$app->db->beginTransaction();
 				try {				
 					if ($model->save()) {					
