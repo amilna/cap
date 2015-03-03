@@ -129,7 +129,7 @@ use kartik\datetime\DateTimePicker;
 										xhr = JSON.parse(xhr);									
 										if (xhr != null)
 										{
-											console.log(event,ui,xhr);								
+											//console.log(event,ui,xhr);								
 											var t = JSON.parse(xhr.json);
 											var total = $("#transaction-total").val();																						
 											
