@@ -108,10 +108,22 @@ class TransactionController extends Controller
 		}
     }
     
-    public function actionTemplate($id)
-    {                
-        $model = Template::find()->where("title = :t",["t"=>$id])->one();		
-        return \yii\helpers\Json::encode($model);			
+    public function actionTemplate($id = false,$term = false)
+    {                        
+        $res = [];
+        if ($term)
+        {
+			$model = Template::find()->select(["title"])->where(["like","lower(title)",strtolower($term)])->asArray()->all();			
+			foreach ($model as $m)
+			{
+				$res[] = $m["title"];	
+			}			
+		}
+		elseif ($id)
+		{
+			$res = Template::find()->where("title = :t",["t"=>$id])->one();					
+		}
+		return \yii\helpers\Json::encode($res);			
     }
     
     public function actionDetail_form($increaseon,$usedaccounts = "")    

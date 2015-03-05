@@ -118,7 +118,7 @@ use kartik\datetime\DateTimePicker;
 		<div class="col-sm-9">			
 	<?= $form->field($model, 'title')->widget(AutoComplete::classname(), [			
 			'clientOptions' => [
-				'source' => Yii::$app->urlManager->createUrl("//cap/transaction/index?format=json&arraymap=title"),					
+				'source' => Yii::$app->urlManager->createUrl("//cap/transaction/template"),					
 			],
 			'clientEvents' => [				
 				'select' => 'function(event, ui) {																			

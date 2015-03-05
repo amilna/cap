@@ -167,18 +167,20 @@ class Transaction extends \yii\db\ActiveRecord
 			'type'=>[							
 						1=>Yii::t('app','Transfers'),
 						2=>Yii::t('app','Receipt'),
-						3=>Yii::t('app','Assets buying'),							
-						4=>Yii::t('app','Expenses'),
-						5=>Yii::t('app','Reduction'),							
-						//6=>Yii::t('app','Revenues'),							
+						3=>Yii::t('app','Assets selling'),													
+						4=>Yii::t('app','Assets buying'),							
+						5=>Yii::t('app','Expenses'),
+						6=>Yii::t('app','Reduction'),							
+						//7=>Yii::t('app','Revenues'),							
 					],			
 			'cashFlow'=>[							
 						1=>0,
 						2=>1,
-						3=>-1,							
-						4=>-1,
-						5=>-1,							
-						//6=>1,							
+						3=>1,													
+						4=>-1,							
+						5=>-1,
+						6=>-1,							
+						//7=>1,							
 					],		
 		];				
 		

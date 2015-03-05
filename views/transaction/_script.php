@@ -35,12 +35,23 @@ $module = Yii::$app->getModule('cap');
 			else if (tipe == 3)
 			{
 				var cek = function(a){									
+					return ( (increaseon == "debet"? a["increaseon"] == 0 && a["isbalance"] && a["exchangable"] : false) ||					
+							(increaseon != "debet"? 
+								(a["increaseon"] == 0 && a["isbalance"] && !a["exchangable"]) || 
+								(a["increaseon"] == 1 && !a["isbalance"] && !a["exchangable"]) 
+							: false)
+							?true:false);																			
+				};
+			}							
+			else if (tipe == 4)
+			{
+				var cek = function(a){									
 					return ( (increaseon == "debet"? a["increaseon"] == 0 && a["isbalance"] && !a["exchangable"] : false) ||					
 							(increaseon != "debet"? a["increaseon"] == 0 && a["isbalance"] && a["exchangable"] : false)
 							?true:false);																			
 				};
 			}	
-			else if (tipe == 4)
+			else if (tipe == 5)
 			{
 				var cek = function(a){									
 					return ( (increaseon == "debet"? a["increaseon"] == 0 && !a["isbalance"] : false) ||					
@@ -48,7 +59,7 @@ $module = Yii::$app->getModule('cap');
 							?true:false);																			
 				};
 			}
-			else if (tipe == 5)
+			else if (tipe == 6)
 			{
 				var cek = function(a){									
 					return ( (increaseon == "debet"? a["increaseon"] == 1 && a["isbalance"] : false) ||					
@@ -56,7 +67,7 @@ $module = Yii::$app->getModule('cap');
 							?true:false);																			
 				};
 			}													
-			else if (tipe == 6)
+			else if (tipe == 7)
 			{
 				var cek = function(a){									
 					return ( (increaseon == "debet"? a["increaseon"] == 0 && a["isbalance"] && a["exchangable"] : false) ||					
