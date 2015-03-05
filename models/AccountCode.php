@@ -229,15 +229,25 @@ class AccountCode extends \yii\db\ActiveRecord
 		}
 		else
 		{					
-			if (isset($changedAttributes["parent_id"]))
+			$isk = false;
+			foreach ($changedAttributes as $k=>$v)
 			{
+				if ($k == "parent_id")
+				{
+					$isk = true;	
+				}	
+			}
+			
+			if ($isk)
+			{
+				
 				if ($this->parent_id != $changedAttributes["parent_id"])
 				{
-					$run = true;	
+					$run = true;						
 				}
 			}
 		}				
-		
+				
 		if ($run)
 		{		
 			$jml = $this->db->createCommand("SELECT count(1)
@@ -246,19 +256,27 @@ class AccountCode extends \yii\db\ActiveRecord
 					")->queryScalar();
 			
 			$pId = $this->parent_id;
-			if ($pId == null && $jml > 1)
+			if ($pId == null)
 			{					
-				$parent = $this->find()->where("parent_id is null AND id != :id",[":id"=>$this->id])->one();
-				$pId = $parent->id;
-				$res = $this->db->createCommand("UPDATE 
-					".AccountCode::tableName()." SET
-					parent_id = ".$pId."
-					WHERE id = ".$this->id)->execute();							
+				if ($jml > 1)
+				{				
+					$parent = $this->find()->where("parent_id is null AND id != :id",[":id"=>$this->id])->one();
+					$pId = $parent->id;
+					$res = $this->db->createCommand("UPDATE 
+						".AccountCode::tableName()." SET
+						parent_id = ".$pId."
+						WHERE id = ".$this->id)->execute();							
+				}
+				else
+				{
+					$parent = $this->find()->where("parent_id is null")->one();
+				}	
 			}
 			else
 			{
 				$parent = $this->findOne(["id"=>$pId]);	
 			}
+			
 			$pLeft = $parent->id_left;
 			$pRight = $parent->id_right;
 			$pLevel = $parent->id_level;
@@ -276,7 +294,7 @@ class AccountCode extends \yii\db\ActiveRecord
 				$opId = $oldparent->id;
 				$opLeft = $oldparent->id_left;
 				$opRight = $oldparent->id_right;
-				$opLevel = $oldparent->id_level;						
+				$opLevel = $oldparent->id_level;				
 			}				
 			
 			if ($this->isdel == 1 || !$opLeft)
@@ -289,10 +307,10 @@ class AccountCode extends \yii\db\ActiveRecord
 			}							
 			
 			$lmin = $left>0?min($pLeft,$left):$pLeft;			
-			$lmax = $opLeft?max($pLeft,$left):false;					
+			$lmax = $opLeft && $left>0?max($pLeft,$left):false;					
 			
 			$rmin = $lmin;
-			$rmax = $lmax;
+			$rmax = $lmax;										
 			
 			$rLeft = 'id_left > '.$lmin.($lmax?' AND id_left <= '.$lmax:'');
 			$rRight = 'id_right >= '.$rmin.($rmax?' AND id_right < '.$rmax:'');			
@@ -310,7 +328,27 @@ class AccountCode extends \yii\db\ActiveRecord
 				$vChild = "(".$left.")+(".$pLeft.(($pLeft - $left) > 0 && $left > 0?$op.$vRest:"")."+1)";
 				$vLevel = "(".$level.")+".($pLevel+1);
 			}
-			
+			/*
+			die("UPDATE 
+					".AccountCode::tableName()." SET
+					(id_left,id_right,id_level)
+					= (
+						case when ".$rLeft." and (".$data.") is not true then id_left".$op.$vRest." else												
+							case when ".$data." then id_left-".$vChild." else													
+								id_left						
+							end	
+						end,		
+						case when ".$rRight." and (".$data.") is not true then id_right".$op.$vRest." else					
+							case when ".$data." then id_right-".$vChild." else								
+								id_right						
+							end	
+						end,					
+						case when ".$data." then id_level-".$vLevel." else
+							id_level							
+						end
+					)		
+					WHERE isdel = 0");	
+			*/
 			$res = $this->db->createCommand("UPDATE 
 					".AccountCode::tableName()." SET
 					(id_left,id_right,id_level)

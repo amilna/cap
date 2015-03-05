@@ -86,6 +86,33 @@ class AccountController extends Controller
 		}
     }
     
+    public function actionRe_arrange()
+    {
+		$transaction = Yii::$app->db->beginTransaction();
+		try {							
+			
+			$accounts = AccountCode::find()->where("parent_id is not null")->orderBy("id")->all();
+			$res = Yii::$app->db->createCommand("update ".AccountCode::tableName()." SET (id_left,id_right,id_level,isdel) = (-1,0,0,1) WHERE parent_id is not null")->execute();			
+			$res = Yii::$app->db->createCommand("update ".AccountCode::tableName()." SET (id_left,id_right,id_level,isdel) = (1,2,1,0) WHERE parent_id is null")->execute();						
+			
+			foreach ($accounts as $account)
+			{				
+				$parent_id = $account->parent_id+0;
+				$res = Yii::$app->db->createCommand("update ".AccountCode::tableName()." SET parent_id = null WHERE id=".$account->id)->execute();
+				
+				$account0 = AccountCode::findOne($account->id);							
+				$account0->parent_id = $parent_id;
+				$account0->isdel = 0;
+				$res = (!$account0->save()?false:$res);								
+			}			 														
+			$transaction->commit();
+			return $this->redirect(['index']);	
+		} catch (Exception $e) {
+			$transaction->rollBack();
+			die('Error saat import');
+		}				
+	}
+    
     public function actionGet_csv()
     {
         $file = Yii::$app->getBasePath().'/coa.csv';        

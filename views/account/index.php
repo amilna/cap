@@ -52,7 +52,10 @@ $this->params['breadcrumbs'][] = $this->title;
 	</div>
 	
 	<?php
-		$level = 2;		
+		$level0 = 2;		
+		$level1 = 2;
+		$level2 = 2;
+		$level3 = 2;
 		$html0 = "";
 		$html1 = "";
 		$html2 = "";
@@ -62,6 +65,24 @@ $this->params['breadcrumbs'][] = $this->title;
 		{											
 			//$pos = ' <small>('.$account->id_left.'-'.$account->id_right.'-'.$account->id_level.')</small>';
 			$pos = "";
+			
+			if ($account->isbalance && $account->increaseon == 0)
+			{
+				$level = $level0;	
+			}
+			elseif ($account->isbalance && $account->increaseon == 1)
+			{
+				$level = $level1;	
+			}
+			elseif (!$account->isbalance && $account->increaseon == 0)
+			{
+				$level = $level2;		
+			}
+			elseif (!$account->isbalance && $account->increaseon == 1)
+			{
+				$level = $level3;		
+			}
+			
 			
 			$value = $account->saldo*($account->increaseon == 0?1:-1);
 			$html = "";
@@ -77,7 +98,7 @@ $this->params['breadcrumbs'][] = $this->title;
 			
 			}
 			elseif ($account->id_level < $level)
-			{
+			{			
 				for ($i = 0;$i < $level-$account->id_level;$i++)
 				{					
 					$html .= '</li></ul>';	
@@ -87,29 +108,37 @@ $this->params['breadcrumbs'][] = $this->title;
 							
 			}
 			else
-			{
+			{				
+				if ($account->name == "Treasure")
+				{
+					$html .= "tos ".$level." ".$account->id_level;	
+				}
 				$html .= '<li>'."<span class='account-li col-xs-12'>".($account->id_level != 2?$account->code.' - ':'<h4>').($account->id_level == 3?'<b>':'').Html::a($account->name, ['view', 'id' => $account->id]).'<span class="pull-right">'./*" ".$account->debet."-".$account->credit."= ".*/number_format($value/($div == 0?1:$div),2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]).'</span>'.($account->id_level == 3?'</b>':'').($account->id_level != 2?'':'</h4>').$pos."</span>".'</li>';
 			}						
 						
 			if ($account->isbalance && $account->increaseon == 0)
 			{
 				$html0 .= $html;	
+				$level0 = $account->id_level; 
 			}
 			elseif ($account->isbalance && $account->increaseon == 1)
 			{
 				$html1 .= $html;	
+				$level1 = $account->id_level; 
 			}
 			elseif (!$account->isbalance && $account->increaseon == 0)
 			{
 				$html2 .= $html;	
+				$level2 = $account->id_level; 
 			}
 			elseif (!$account->isbalance && $account->increaseon == 1)
 			{
 				$html3 .= $html;	
+				$level3 = $account->id_level; 
 			}					
 						
 			$xtml .= $html;				
-			$level = $account->id_level; 
+			
 		}	
 	?>
 	
