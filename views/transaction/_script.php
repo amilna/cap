@@ -7,7 +7,7 @@ $module = Yii::$app->getModule('cap');
 <script type="text/javascript">
 <?php $this->beginBlock('JS_END') ?>
 		var accounts = <?= json_encode($model->accounts()) ?>;
-		var journals = <?= \yii\helpers\Json::encode($model->isNewRecord?$model->id:$model->journals) ?>;		
+		var journals = <?= \yii\helpers\Json::encode($model->isNewRecord?$model->id:$model->journals) ?>;						
 		
 		function filterOptions(tipe,increaseon)
 		{											
@@ -38,7 +38,7 @@ $module = Yii::$app->getModule('cap');
 					return ( (increaseon == "debet"? a["increaseon"] == 0 && a["isbalance"] && a["exchangable"] : false) ||					
 							(increaseon != "debet"? 
 								(a["increaseon"] == 0 && a["isbalance"] && !a["exchangable"]) || 
-								(a["increaseon"] == 1 && !a["isbalance"] && !a["exchangable"]) 
+								(a["increaseon"] == 1) 
 							: false)
 							?true:false);																			
 				};
@@ -47,7 +47,10 @@ $module = Yii::$app->getModule('cap');
 			{
 				var cek = function(a){									
 					return ( (increaseon == "debet"? a["increaseon"] == 0 && a["isbalance"] && !a["exchangable"] : false) ||					
-							(increaseon != "debet"? a["increaseon"] == 0 && a["isbalance"] && a["exchangable"] : false)
+							(increaseon != "debet"? 
+									(a["increaseon"] == 0 && a["isbalance"] && a["exchangable"] ) ||
+									(a["increaseon"] == 1 && a["isbalance"])
+							: false)
 							?true:false);																			
 				};
 			}	
@@ -77,6 +80,15 @@ $module = Yii::$app->getModule('cap');
 			}
 			
 			var usedaccounts = [];
+			$(".transaction-"+increaseon+"-account option").each(function(i,d){
+				
+				var dval = $(d).val();
+				if ($(d).prop("selected"))
+				{
+					usedaccounts[dval] = true;						
+				}										
+			});			
+			
 			
 			$(".transaction-"+increaseon+"-account option").each(function(i,d){
 				
@@ -88,11 +100,11 @@ $module = Yii::$app->getModule('cap');
 						var isuse = false;
 						if ($(d).prop("selected"))
 						{
-							usedaccounts[a["id"]] = true;	
+							//usedaccounts[a["id"]] = true;	
 							isuse = true;
-						}						
+						}											
 						
-						//console.log(a,a["isbalance"],ibl);
+						//console.log(usedaccounts);
 						
 						if (cek(a) && ((typeof usedaccounts[a["id"]] == "undefined") || isuse) )
 						{
@@ -151,6 +163,7 @@ $module = Yii::$app->getModule('cap');
 			}
 			$("#w0"+n+"").unbind("change");
 			$("#w0"+n+"").bind("change",function(){
+				
 				var tipe = $("#transaction-type").val();			
 				filterOptions(tipe,"debet");
 				filterOptions(tipe,"credit");															
@@ -218,7 +231,7 @@ $module = Yii::$app->getModule('cap');
 				accountAmount("debet",true);
 				accountAmount("credit",true);
 			});								
-			
+						
 			var tipe = $("#transaction-type").val();			
 			filterOptions(tipe,"debet");
 			filterOptions(tipe,"credit");														
@@ -239,7 +252,9 @@ $module = Yii::$app->getModule('cap');
 				{
 					if (typeof $(this).attr("data-ratio") !== "undefined")
 					{
-						$(this).val($(this).attr("data-ratio")*maxA);	
+						var num = $(this).attr("data-ratio")*maxA;
+						var dval = Math.round(num * 100) / 100;
+						$(this).val(dval);	
 					}					
 				}				
 				
@@ -254,8 +269,15 @@ $module = Yii::$app->getModule('cap');
 				
 				lA = nA;
 				lD = $(this).attr("id");
+				
+				if (A == 0)
+				{
+					var id = $(this).attr("id").replace("w2","");
+					dId += (dId == ""?"#":",#")+"detail_"+id;															
+				}								
 			});	
 			
+			/*
 			$(".transaction-"+increaseon+"-amount").each(function(){				
 				var A = parseFloat($(this).val());
 				
@@ -264,10 +286,11 @@ $module = Yii::$app->getModule('cap');
 					var id = $(this).attr("id").replace("w2","");
 					dId += (dId == ""?"#":",#")+"detail_"+id;					
 					//console.log($("#w0"+id).val());
-					delete usedaccounts[parseInt($("#w0"+id).val())];						
+					//delete usedaccounts[parseInt($("#w0"+id).val())];						
 					
 				}								
 			});																
+			*/
 											
 			$(dId).css("display","none");
 			$(dId).html("");
