@@ -29,7 +29,7 @@ class JournalSearch extends Journal
             [['amount','quantity','remarks','time','title','subject','tags','transactionRemarks','accountName'], 'safe'],
             //[[ 'amount'], 'number'],
         ];
-    }
+    }		
 	
 	public static function find()
 	{
@@ -44,16 +44,21 @@ class JournalSearch extends Journal
     {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
-    }
-	
-	public function attributeLabels()
+    }	
+    
+    public function attributeLabels()
     {
         $module = Yii::$app->getModule("cap");
         
-        return [            
+        return array_merge(parent::attributeLabels(),[
+            'title' => Yii::t('app', 'Title'),                                    
+            'subject' => Yii::t('app', 'Subject'),                                    
+            'tags' => Yii::t('app', 'Tags'),                                    
+            'transactionRemarks' => Yii::t('app', 'Transaction')." ".Yii::t('app', 'Remarks'),                                    
+            'accountName' => Yii::t('app', 'Account'),                                    
             'code' => Yii::t('app', 'Account'), 
-            'amount'=> Yii::t('app', 'Amount')." in ".$module->currency['symbol'],//'Debet | Credit', //'Debet__________Credit'
-        ];
+            'amount'=> Yii::t('app', 'Amount')." (".$module->currency['symbol'].")",//'Debet | Credit', //'Debet__________Credit'
+        ]);
     }
 	
 	private function queryString($fields)
