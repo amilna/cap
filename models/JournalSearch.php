@@ -70,7 +70,14 @@ class JournalSearch extends Journal
 			$tab = isset($afield[1])?$afield[1]:false;			
 			if (!empty($this->$field))
 			{				
-				array_push($params,["like", "lower(".($tab?$tab.".":"").$field.")", strtolower($this->$field)]);
+				if (substr($this->$field,0,2) == "< " || substr($this->$field,0,2) == "> " || substr($this->$field,0,2) == "<=" || substr($this->$field,0,2) == ">=" || substr($this->$field,0,2) == "<>") 
+				{					
+					array_push($params,[str_replace(" ","",substr($this->$field,0,2)), "lower(".($tab?$tab.".":"").$field.")", strtolower(trim(substr($this->$field,2)))]);
+				}
+				else
+				{					
+					array_push($params,["like", "lower(".($tab?$tab.".":"").$field.")", strtolower($this->$field)]);
+				}				
 			}
 		}	
 		return $params;
@@ -88,7 +95,7 @@ class JournalSearch extends Journal
 				$number = explode(" ",trim($this->$field));							
 				if (count($number) == 2)
 				{									
-					if (in_array($number[0],['>','>=','<','<=']) && is_numeric($number[1]))
+					if (in_array($number[0],['>','>=','<','<=','<>']) && is_numeric($number[1]))
 					{
 						array_push($params,[$number[0], ($tab?$tab.".":"").$field, $number[1]]);	
 					}
@@ -107,7 +114,7 @@ class JournalSearch extends Journal
 					{
 						array_push($params,['=', ($tab?$tab.".":"").$field, str_replace(["<",">","="],"",$number[0])]);		
 					}	
-				}									
+				}
 			}
 		}	
 		return $params;
@@ -125,18 +132,18 @@ class JournalSearch extends Journal
 				$time = explode(" - ",$this->$field);			
 				if (count($time) > 1)
 				{								
-					array_push($params,['>=', "concat('',".($tab?$tab.".":"").$field.")", $time[0]]);	
-					array_push($params,['<=', "concat('',".($tab?$tab.".":"").$field.")", $time[1]." 24:00:00"]);
+					array_push($params,[">=", "concat('',".($tab?$tab.".":"").$field.")", $time[0]]);	
+					array_push($params,["<=", "concat('',".($tab?$tab.".":"").$field.")", $time[1]." 24:00:00"]);
 				}
 				else
 				{
-					if (substr($time[0],0,2) == "< " || substr($time[0],0,2) == "> " || substr($time[0],0,2) == "<=" || substr($time[0],0,2) == ">=") 
+					if (substr($time[0],0,2) == "< " || substr($time[0],0,2) == "> " || substr($time[0],0,2) == "<=" || substr($time[0],0,2) == ">=" || substr($time[0],0,2) == "<>") 
 					{					
 						array_push($params,[str_replace(" ","",substr($time[0],0,2)), "concat('',".($tab?$tab.".":"").$field.")", trim(substr($time[0],2))]);
 					}
 					else
 					{					
-						array_push($params,['like', "concat('',".($tab?$tab.".":"").$field.")", $time[0]]);
+						array_push($params,["like", "concat('',".($tab?$tab.".":"").$field.")", $time[0]]);
 					}
 				}	
 			}
