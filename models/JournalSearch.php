@@ -228,8 +228,7 @@ class JournalSearch extends Journal
 			['remarks','{{%cap_journal}}'],
 			['title','{{%cap_transaction}}'],
 			['subject','{{%cap_transaction}}'],
-			['tags','{{%cap_transaction}}'],
-			['remarks','{{%cap_transaction}}'],			
+			['tags','{{%cap_transaction}}'],			
 		]);						
 		foreach ($params as	$p)
 		{		
