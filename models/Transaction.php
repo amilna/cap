@@ -170,7 +170,7 @@ class Transaction extends \yii\db\ActiveRecord
 						3=>Yii::t('app','Assets selling'),													
 						4=>Yii::t('app','Assets buying'),							
 						5=>Yii::t('app','Expenses'),
-						6=>Yii::t('app','Reduction'),							
+						6=>Yii::t('app','Payment'),							
 						//7=>Yii::t('app','Revenues'),							
 					],			
 			'cashFlow'=>[							
@@ -222,6 +222,17 @@ class Transaction extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Journal::className(), ['transaction_id' => 'id'])->where("isdel=0");
     }
+    
+    public function toHex($string)
+	{		
+		$hex = '';
+		for ($i=0; $i<strlen($string); $i++){
+			$ord = ord($string[$i]);
+			$hexCode = dechex($ord);
+			$hex .= '%'.substr('0'.$hexCode, -2);
+		}
+		return $hex;
+	}
     
     public function toMoney($value = false)
     {
