@@ -148,6 +148,7 @@ class TransactionController extends Controller
         $model = new Transaction();	
         $model->time = date("Y/m/d H:i:s");
         $model->isdel = 0;	
+        $model->type = 0;	
 		                       		
         if (Yii::$app->request->post()) {						
 			$post = Yii::$app->request->post();						

@@ -12,8 +12,10 @@ $module = Yii::$app->getModule('cap');
 		function filterOptions(tipe,increaseon)
 		{											
 			var cek = function(a){									
-					return ( a["increaseon"] == (increaseon == "debet"?0:1)
+					/*return ( a["increaseon"] == (increaseon == "debet"?0:1)
 							?true:false);
+					*/
+					return true;		
 				};
 			
 			if (tipe == 1)

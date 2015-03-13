@@ -165,6 +165,7 @@ class Transaction extends \yii\db\ActiveRecord
 	{
 		$lists = [
 			'type'=>[							
+						0=>Yii::t('app','General'),
 						1=>Yii::t('app','Transfers'),
 						2=>Yii::t('app','Receipt'),
 						3=>Yii::t('app','Assets selling'),													
