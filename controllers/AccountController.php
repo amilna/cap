@@ -157,7 +157,7 @@ class AccountController extends Controller
 					$model->parent_id = $parent_id;
 					$model->increaseon = (in_array(substr($model->code,0,1),["1","5"])?0:1);
 					$model->isbalance = (in_array(substr($model->code,0,1),["4","5"])?0:1);				
-					$model->exchangable = (in_array(substr($model->code,0,1),["1"])?1:0);				
+					$model->exchangable = (in_array(substr($model->code,0,1),["1"])?0:0);				
 					$model->save();				
 				}
 			}
