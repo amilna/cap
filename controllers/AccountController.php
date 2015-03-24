@@ -91,7 +91,7 @@ class AccountController extends Controller
 		$transaction = Yii::$app->db->beginTransaction();
 		try {							
 			
-			$accounts = AccountCode::find()->where("parent_id is not null")->orderBy("id")->all();
+			$accounts = AccountCode::find()->andWhere("parent_id is not null")->orderBy("id")->all();
 			$res = Yii::$app->db->createCommand("update ".AccountCode::tableName()." SET (id_left,id_right,id_level,isdel) = (-1,0,0,1) WHERE parent_id is not null")->execute();			
 			$res = Yii::$app->db->createCommand("update ".AccountCode::tableName()." SET (id_left,id_right,id_level,isdel) = (1,2,1,0) WHERE parent_id is null")->execute();						
 			
