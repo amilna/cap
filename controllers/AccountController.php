@@ -294,9 +294,9 @@ class AccountController extends Controller
         
         $transaction = Yii::$app->db->beginTransaction();
 		try {				
-			$model->delete();			
-			//$model->isdel = 1;			
-			//$model->save();
+			//$model->delete();			
+			$model->isdel = 1;			
+			$model->save();
 			
 			$transaction->commit();		
 		} catch (Exception $e) {
