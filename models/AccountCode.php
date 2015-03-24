@@ -3,6 +3,7 @@
 namespace amilna\cap\models;
 
 use Yii;
+use creocoder\nestedsets\NestedSetsBehavior;
 //use amilna\cap\models\Journal;
 
 /**
@@ -22,6 +23,32 @@ use Yii;
  */
 class AccountCode extends \yii\db\ActiveRecord
 {
+    public function behaviors() {
+        return [
+            'tree' => [
+                'class' => NestedSetsBehavior::className(),
+                //'treeAttribute' => 'tree',
+                'leftAttribute' => 'id_left',
+                'rightAttribute' => 'id_right',
+                'depthAttribute' => 'id_level',
+            ],
+        ];
+    }
+
+    public function transactions()
+    {
+        return [
+            self::SCENARIO_DEFAULT => self::OP_ALL,
+        ];
+    }
+	
+    public static function find()
+    {
+        return new AccountCodeQuery(get_called_class());
+    }
+    
+    
+    
     /**
      * @inheritdoc
      */
@@ -29,7 +56,25 @@ class AccountCode extends \yii\db\ActiveRecord
     {
         return '{{%cap_account}}';
     }
+	
+	
+	public function init()
+	{
+		$jml = $this->db->createCommand("SELECT count(1)
+			FROM ".AccountCode::tableName()."
+			WHERE isdel = 0
+			")->queryScalar();
+			
+		if ($jml == 0)
+		{
+			$res = $this->db->createCommand("INSERT 
+				INTO ".AccountCode::tableName()."
+				(code,name,increaseon,id_left,id_right,id_level)
+				VALUES (0,'".Yii::t("app","Base Account")."',0,1,2,1)
+				")->execute();								
+		}
 		
+	}	
 	
     /**
      * @inheritdoc
@@ -176,209 +221,38 @@ class AccountCode extends \yii\db\ActiveRecord
     public function getAccountCodes()
     {
         return $this->hasMany(AccountCode::className(), ['parent_id' => 'id']);
-    }
-
-
-    public function beforeSave($insert)
-    {
-		if (parent::beforeSave($insert)) {	
-			/*							
-			$code = $this->db->createCommand("SELECT count(1)
-					FROM ".AccountCode::tableName()."
-					WHERE code = :code
-					")->bindValues([":code"=>$this->code])->queryScalar();			
-			
-			if ($code > 0)
-			{																				
-				$al = $this->validate(["code"]);				
-				$attr = $this->attributes;
-				$attr["error"]["code"] = Yii::t("app",'Code "'.$attr["code"].'" has already been taken.');
-				Yii::$app->controller->redirect(['//cap/account/create', 
-					'attributes' => $attr
-				]);	
-				return false;			
-			}
-			*/
-			
-			$jml = $this->db->createCommand("SELECT count(1)
-					FROM ".AccountCode::tableName()."
-					WHERE isdel = 0
-					")->queryScalar();
-					
-			if ($jml == 0)
-			{
-				$res = $this->db->createCommand("INSERT 
-					INTO ".AccountCode::tableName()."
-					(code,name,increaseon,id_left,id_right,id_level)
-					VALUES (0,'".Yii::t("app","Base Account")."',0,1,2,1)
-					")->execute();
-			}			
-			return true;
-			
-		} else {
-			return false;
-		}
-	}
-   
-    public function afterSave($insert, $changedAttributes)
-    {									
-		$run = false;
-		if ($insert || ($this->isdel == 1)) 
+    }		          
+	
+	public function afterSave($insert, $changedAttributes)
+    {								 	
+		$parent = $this->parents(1)->one();
+		if ($parent)
 		{
-			$run = true;
-		}
-		else
-		{					
-			$isk = false;
-			foreach ($changedAttributes as $k=>$v)
-			{
-				if ($k == "parent_id")
-				{
-					$isk = true;	
-				}	
-			}
-			
-			if ($isk)
-			{
-				
-				if ($this->parent_id != $changedAttributes["parent_id"])
-				{
-					$run = true;						
-				}
-			}
-		}				
-				
-		if ($run)
-		{		
-			$jml = $this->db->createCommand("SELECT count(1)
-					FROM ".AccountCode::tableName()."
-					WHERE isdel = 0
-					")->queryScalar();
-			
-			$pId = $this->parent_id;
-			if ($pId == null)
-			{					
-				if ($jml > 1)
-				{				
-					$parent = $this->find()->where("parent_id is null AND id != :id",[":id"=>$this->id])->one();
-					$pId = $parent->id;
-					$res = $this->db->createCommand("UPDATE 
-						".AccountCode::tableName()." SET
-						parent_id = ".$pId."
-						WHERE id = ".$this->id)->execute();							
-				}
-				else
-				{
-					$parent = $this->find()->where("parent_id is null")->one();
-				}	
-			}
-			else
-			{
-				$parent = $this->findOne(["id"=>$pId]);	
-			}
-			
-			$pLeft = $parent->id_left;
-			$pRight = $parent->id_right;
-			$pLevel = $parent->id_level;
-			
-			$left = ($this->id_left == null?-1:$this->id_left);					
-			$right = ($this->id_right == null?0:$this->id_right);
-			$level = ($this->id_level == null?0:$this->id_level);
-			
-			$opLeft = false;		
-			$opRight = false;
-			$opLevel = false;
-			if (isset($changedAttributes["parent_id"]))
-			{
-				$oldparent = $this->findOne(["id"=>$changedAttributes["parent_id"]]);
-				$opId = $oldparent->id;
-				$opLeft = $oldparent->id_left;
-				$opRight = $oldparent->id_right;
-				$opLevel = $oldparent->id_level;				
-			}				
-			
-			if ($this->isdel == 1 || !$opLeft)
-			{
-				$op = ($this->isdel == 1?"-":"+");				
-			}
-			else
-			{		
-				$op = ( ($pLeft - $left) < 0?"+":"-");
-			}							
-			
-			$lmin = $left>0?min($pLeft,$left):$pLeft;			
-			$lmax = $opLeft && $left>0?max($pLeft,$left):false;					
-			
-			$rmin = $lmin;
-			$rmax = $lmax;										
-			
-			$rLeft = 'id_left > '.$lmin.($lmax?' AND id_left <= '.$lmax:'');
-			$rRight = 'id_right >= '.$rmin.($rmax?' AND id_right < '.$rmax:'');			
-			$data = 'id_left >= '.$left.' AND id_left < '.$right;		
-			
-			if ($this->isdel == 1)
-			{			
-				$vRest = "2";
-				$vChild = "1";				
-				$vLevel = "1";	
-			}
-			else
-			{										
-				$vRest = "(".($right-$left+1).")";				
-				$vChild = "(".$left.")+(".$pLeft.(($pLeft - $left) > 0 && $left > 0?$op.$vRest:"")."+1)";
-				$vLevel = "(".$level.")+".($pLevel+1);
-			}
-			/*
-			die("UPDATE 
-					".AccountCode::tableName()." SET
-					(id_left,id_right,id_level)
-					= (
-						case when ".$rLeft." and (".$data.") is not true then id_left".$op.$vRest." else												
-							case when ".$data." then id_left-".$vChild." else													
-								id_left						
-							end	
-						end,		
-						case when ".$rRight." and (".$data.") is not true then id_right".$op.$vRest." else					
-							case when ".$data." then id_right-".$vChild." else								
-								id_right						
-							end	
-						end,					
-						case when ".$data." then id_level-".$vLevel." else
-							id_level							
-						end
-					)		
-					WHERE isdel = 0");	
-			*/
 			$res = $this->db->createCommand("UPDATE 
-					".AccountCode::tableName()." SET
-					(id_left,id_right,id_level)
-					= (
-						case when ".$rLeft." and (".$data.") is not true then id_left".$op.$vRest." else												
-							case when ".$data." then id_left-".$vChild." else													
-								id_left						
-							end	
-						end,		
-						case when ".$rRight." and (".$data.") is not true then id_right".$op.$vRest." else					
-							case when ".$data." then id_right-".$vChild." else								
-								id_right						
-							end	
-						end,					
-						case when ".$data." then id_level-".$vLevel." else
-							id_level							
-						end
-					)		
-					WHERE isdel = 0")->execute();
+					".$this->tableName()."
+					SET parent_id = ".$parent->id."
+					WHERE id = ".$this->id."")->execute();
+									
+		}
+		
+		if ($this->isdel == 1)
+		{
+			$this->afterDelete();
 			
-			if ($this->isdel == 1)
-			{
-				$res = $this->db->createCommand("UPDATE 
-					".AccountCode::tableName()." SET
-					(id_left,id_right,id_level)
-					= ((-1),0,0)		
-					WHERE id = ".$this->id)->execute();							
-			}
-		}		
+			$res = $this->db->createCommand("UPDATE 
+				".$this->tableName()."
+				SET parent_id = ".($parent?$parent->id:"null")."
+				WHERE parent_id = ".$this->id."")->execute();						
+			
+			$res = $this->db->createCommand("UPDATE 
+				".$this->tableName()."
+				SET (id_left,id_right,id_level,parent_id) = (-1,0,0,null)
+				WHERE id = ".$this->id."")->execute();									
+		}
+				
 		parent::afterSave($insert, $changedAttributes);
 	}
+	 
+	
 
 }

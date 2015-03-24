@@ -86,8 +86,11 @@ class AccountController extends Controller
 		}
     }
     
+    
     public function actionRe_arrange()
     {
+		return $this->redirect(['index']);					
+		/*
 		$transaction = Yii::$app->db->beginTransaction();
 		try {							
 			
@@ -102,7 +105,8 @@ class AccountController extends Controller
 				
 				$account0 = AccountCode::findOne($account->id);							
 				$account0->parent_id = $parent_id;
-				$account0->isdel = 0;
+				$account0->isdel = 0;				
+				
 				$res = (!$account0->save()?false:$res);								
 			}			 														
 			$transaction->commit();
@@ -110,8 +114,10 @@ class AccountController extends Controller
 		} catch (Exception $e) {
 			$transaction->rollBack();
 			die('Error saat import');
-		}				
+		}
+		*/ 				
 	}
+	 
     
     public function actionGet_csv()
     {
@@ -137,7 +143,7 @@ class AccountController extends Controller
 		}	
 		
 		$transaction = Yii::$app->db->beginTransaction();
-		try {				
+		try {													
 					
 			foreach ($data as $d)
 			{
@@ -157,7 +163,19 @@ class AccountController extends Controller
 					$model->parent_id = $parent_id;
 					$model->increaseon = (in_array(substr($model->code,0,1),["1","5"])?0:1);
 					$model->isbalance = (in_array(substr($model->code,0,1),["4","5"])?0:1);				
-					$model->exchangable = (in_array(substr($model->code,0,1),["1"])?0:0);				
+					$model->exchangable = (in_array(substr($model->code,0,1),["1"])?0:0);						
+					
+					if ($model->parent_id == null && $model->code != 0)
+					{
+						$parent = AccountCode::findOne(["code"=>0]);	
+						$model->parent_id = $parent->id;
+					}
+					else
+					{				
+						$parent = AccountCode::findOne(["id"=>$model->parent_id]);	
+					}	
+					$model->prependTo($parent);
+								
 					$model->save();				
 				}
 			}
@@ -190,12 +208,26 @@ class AccountController extends Controller
 			}
 			$model->attributes = $attr;	
 		}
-		*/ 		
+		*/								
 		
         if ($model->load(Yii::$app->request->post()))
 		{
 			$transaction = Yii::$app->db->beginTransaction();
-			try {				
+			try {										
+				
+				if ($model->parent_id == null && $model->code != 0)
+				{
+					$parent = AccountCode::findOne(["code"=>0]);	
+					$model->parent_id = $parent->id;
+				}
+				else
+				{				
+					$parent = AccountCode::findOne(["id"=>$model->parent_id]);	
+				}								
+					
+				$model->prependTo($parent);
+				
+						
 				$model->save();
 				$transaction->commit();
 				return $this->redirect(['view', 'id' => $model->id]);
@@ -223,7 +255,19 @@ class AccountController extends Controller
 		if ($model->load(Yii::$app->request->post()))
 		{
 			$transaction = Yii::$app->db->beginTransaction();
-			try {				
+			try {									
+				
+				if ($model->parent_id == null && $model->code != 0)
+				{
+					$parent = AccountCode::findOne(["code"=>0]);
+					$model->parent_id = $parent->id;	
+				}
+				else
+				{				
+					$parent = AccountCode::findOne(["id"=>$model->parent_id]);	
+				}	
+				$model->prependTo($parent);
+							
 				$model->save();
 				$transaction->commit();
 				return $this->redirect(['view', 'id' => $model->id]);
@@ -250,9 +294,10 @@ class AccountController extends Controller
         
         $transaction = Yii::$app->db->beginTransaction();
 		try {				
-			//$model->delete();
-			$model->isdel = 1;
-			$model->save();
+			$model->delete();			
+			//$model->isdel = 1;			
+			//$model->save();
+			
 			$transaction->commit();		
 		} catch (Exception $e) {
 			$transaction->rollBack();

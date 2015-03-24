@@ -17,7 +17,6 @@
 	"kartik-v/yii2-money": "*",
 	"kartik-v/yii2-date-range": "*",
 	"kartik-v/yii2-grid": "*",
-	"creocoder/yii2-nested-sets": "*",
 	"amilna/yii2-yap" : "dev-master"
     },
     "autoload": {
