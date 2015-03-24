@@ -226,11 +226,16 @@ class AccountController extends Controller
 				}								
 					
 				$model->prependTo($parent);
-				
-						
-				$model->save();
-				$transaction->commit();
-				return $this->redirect(['view', 'id' => $model->id]);
+														
+				if ($model->save())
+				{				
+					$transaction->commit();
+					return $this->redirect(['view', 'id' => $model->id]);
+				}
+				else
+				{				
+					$transaction->rollBack();
+				}
 			} catch (Exception $e) {
 				$transaction->rollBack();
 			}
@@ -266,11 +271,18 @@ class AccountController extends Controller
 				{				
 					$parent = AccountCode::findOne(["id"=>$model->parent_id]);	
 				}	
-				$model->prependTo($parent);
+				
+				$model->prependTo($parent);								
 							
-				$model->save();
-				$transaction->commit();
-				return $this->redirect(['view', 'id' => $model->id]);
+				if ($model->save())
+				{				
+					$transaction->commit();
+					return $this->redirect(['view', 'id' => $model->id]);
+				}
+				else
+				{				
+					$transaction->rollBack();
+				}
 			} catch (Exception $e) {
 				$transaction->rollBack();
 			}

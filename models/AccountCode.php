@@ -224,24 +224,14 @@ class AccountCode extends \yii\db\ActiveRecord
     }		          
 	
 	public function afterSave($insert, $changedAttributes)
-    {								 	
-		$parent = $this->parents(1)->one();
-		if ($parent)
-		{
-			$res = $this->db->createCommand("UPDATE 
-					".$this->tableName()."
-					SET parent_id = ".$parent->id."
-					WHERE id = ".$this->id."")->execute();
-									
-		}
-		
+    {								 					
 		if ($this->isdel == 1)
 		{
 			$this->afterDelete();
 			
 			$res = $this->db->createCommand("UPDATE 
 				".$this->tableName()."
-				SET parent_id = ".($parent?$parent->id:"null")."
+				SET parent_id = ".$this->parent_id."
 				WHERE parent_id = ".$this->id."")->execute();						
 			
 			$res = $this->db->createCommand("UPDATE 
