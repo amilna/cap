@@ -181,8 +181,12 @@ class TransactionController extends Controller
 							$j->load(["Journal"=>$d]);						
 							$j->remarks = (empty($j->remarks)?$model->remarks." (".$model->tags.")":$j->remarks);
 							$j->transaction_id = $model->id;
-							$j->isdel = 0;					
-							$j->save();			
+							$j->isdel = 0;
+							
+							if ($j->amount > 0)
+							{					
+								$j->save();			
+							}
 						}												
 						$transaction->commit();	
 						return $this->redirect(['view', 'id' => $model->id]);

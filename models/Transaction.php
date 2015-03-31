@@ -107,14 +107,17 @@ class Transaction extends \yii\db\ActiveRecord
 			if (isset($p[$a])) {
 				foreach ($p[$a] as $d)
 				{
-					$v = [];
-					$v['account_id'] = $d['account_id'];
-					$v['type'] = $d['type'];
-					$v['remarks'] = $d['remarks'];
-					$v['quantity'] = $d['quantity'];
-					$v['amount'] = $d['amount'];				
-					$v['ratio'] = $d['amount']/$t['total'];
-					array_push($t['journals'],$v);
+					if (!empty($d['account_id']) && $d['account_id'] > 0 && $d['amount'] > 0)
+					{
+						$v = [];
+						$v['account_id'] = $d['account_id'];
+						$v['type'] = $d['type'];
+						$v['remarks'] = $d['remarks'];
+						$v['quantity'] = $d['quantity'];
+						$v['amount'] = $d['amount'];				
+						$v['ratio'] = $d['amount']/$t['total'];
+						array_push($t['journals'],$v);
+					}
 				}
 			}				
 		}
