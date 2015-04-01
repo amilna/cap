@@ -30,7 +30,7 @@ $tra = new Transaction();
 
     <p>
         <?/*= Html::a(Yii::t('app', 'Create {modelClass}', [
-    'modelClass' => 'Transaction',
+    'modelClass' => Yii::t('app','Transaction'),
 ]), ['//cap/transaction/create'], ['class' => 'btn btn-success'])*/ ?>
     </p>
 		

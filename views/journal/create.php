@@ -7,7 +7,7 @@ use yii\helpers\Html;
 /* @var $model amilna\cap\models\Journal */
 
 $this->title = Yii::t('app', 'Create {modelClass}', [
-    'modelClass' => 'Journal',
+    'modelClass' => Yii::t('app','Journal'),
 ]);
 $this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Journals'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
