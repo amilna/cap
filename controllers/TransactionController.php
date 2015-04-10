@@ -39,6 +39,12 @@ class TransactionController extends Controller
         if ($term) { $req[basename(str_replace("\\","/",get_class($searchModel)))]["term"] = $term;}        
         $dataProvider = $searchModel->search($req);				
 		
+		$query = $dataProvider->query;        
+		if (!isset($req["sort"]))
+        {
+			$query->orderBy("time desc");
+		}
+		
 		if ($format == 'json')
         {
 			$model = [];

@@ -34,7 +34,13 @@ class JournalController extends Controller
     {
         $searchModel = new JournalSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
+		
+		$query = $dataProvider->query;        
+		if (!isset($req["sort"]))
+        {
+			$query->orderBy("{{%cap_transaction}}.time desc");
+		}
+		
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
