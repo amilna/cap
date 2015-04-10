@@ -161,7 +161,27 @@ class Transaction extends \yii\db\ActiveRecord
 	
 	public function getCashFlow()
 	{
-		return $this->total*($this->itemAlias('cashFlow',$this->type));
+		$v = 0;
+		foreach ($this->journals as $j)
+		{
+			if ($j->account->exchangable && $j->isdel == 0) {
+				if ($j->account->increaseon == 0 && $j->type == 0)
+				{
+					$v += $j->amount;	
+				}
+				else
+				{
+					$v -= $j->amount;
+				}
+			}			
+		}
+		
+		if ($v != 0) {
+			$v = $v>0?1:(-1);		
+		}
+		
+		//return $this->total*($this->itemAlias('cashFlow',$this->type));
+		return $this->total*($v);
 	}
 	
 	public function itemAlias($list,$item = false,$bykey = false)
