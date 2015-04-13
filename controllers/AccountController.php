@@ -48,6 +48,30 @@ class AccountController extends Controller
         ]);
     }
     
+    public function actionBalance($parent_id = false)
+    {
+        $searchModel = new AccountCodeSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);        
+        
+        $query = $dataProvider->query;
+        
+        if ($parent_id)
+        {
+			$query->andwhere(['parent_id'=>$parent_id]);
+		}
+                              
+        $query->andwhere('id_left > 1')
+			->orderBy('id_right desc');
+			//->orderBy('id_left');
+			
+		$dataProvider->pagination = false;	
+        
+        return $this->render('balance', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+    
     
     public function actionDaftar()
     {

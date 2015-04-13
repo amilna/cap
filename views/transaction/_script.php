@@ -177,40 +177,41 @@ $module = Yii::$app->getModule('cap');
 			jQuery("#w0"+n).on("select2-open", function(){
 				initSelect2DropStyle("w0"+n);				
 			});						
+									
 			
-			$("#w1"+n+"").val(1.0);
+			var yapMoney = {"radixPoint":"<?= $module->currency["decimal_separator"]?>","groupSeparator":"<?= $module->currency["thousand_separator"]?>", "digits": 2,"autoGroup": true,"prefix":""};
+			$("#w1"+n+"-disp").inputmask("decimal",yapMoney);
+			$("#w1"+n+"-disp").change(function(){
+				var val = parseFloat($("#w1"+n+"-disp").val().replace(yapMoney["prefix"],"").replace(/\<?= $module->currency["thousand_separator"]?>/g,"").replace(/\<?= $module->currency["decimal_separator"]?>/g,"."));
+				val = (isNaN(val)?0:val);				
+				$("#w1"+n).val(val);
+				$("#w1"+n).trigger("change");								
+			});	 												
+			
+			$("#w1"+n+"-disp").val(1.0);
 			if (typeof journal !== "undefined")
 			{
-				$("#w1"+n+"").val(typeof journal["quantity"] !== "undefined"?journal["quantity"]:1);
+				$("#w1"+n+"-disp").val(typeof journal["quantity"] !== "undefined"?journal["quantity"]:1);
+				console.log(journal["quantity"]);
 			}
-			
-			var maskMoney_x = {"prefix":"","suffix":"","thousands":"<?=$module->currency["thousand_separator"]?>","decimal":"<?=$module->currency["decimal_separator"]?>","precision":2,"allowNegative":false};			
-			jQuery("#w1"+n+"-disp").maskMoney(maskMoney_x);
-			var val = parseFloat(jQuery("#w1"+n).val());
-			jQuery("#w1"+n+"-disp").maskMoney("mask", val);
-			jQuery("#w1"+n+"-disp").on("change", function () {
-				 var numDecimal = jQuery("#w1"+n+"-disp").maskMoney("unmasked")[0];
-				jQuery("#w1"+n).val(numDecimal);
-				jQuery("#w1"+n).trigger("change");
-			});
 			
 			var total = (typeof defval !== "undefined"?defval:$("#transaction-total").val());
 			
-			$("#w2"+n+"").val(total);
+			var yapMoney = {"radixPoint":"<?= $module->currency["decimal_separator"]?>","groupSeparator":"<?= $module->currency["thousand_separator"]?>", "digits": 2,"autoGroup": true,"prefix":""};
+			$("#w2"+n+"-disp").inputmask("decimal",yapMoney);
+			$("#w2"+n+"-disp").change(function(){				
+				var val = parseFloat($("#w2"+n+"-disp").val().replace(yapMoney["prefix"],"").replace(/\<?= $module->currency["thousand_separator"]?>/g,"").replace(/\<?= $module->currency["decimal_separator"]?>/g,"."));
+				val = (isNaN(val)?0:val);						
+				$("#w2"+n).val(val);								
+				$("#w2"+n).trigger("change");
+			});	
+			
+			$("#w2"+n+"-disp").val(total);
 			if (typeof journal !== "undefined")
 			{
-				$("#w2"+n+"").val(typeof journal["amount"] !== "undefined"?journal["amount"]:total);
+				$("#w2"+n+"-disp").val(typeof journal["amount"] !== "undefined"?journal["amount"]:total);
 			}
 			
-			var maskMoney_x = {"prefix":"","suffix":"","thousands":"<?=$module->currency["thousand_separator"]?>","decimal":"<?=$module->currency["decimal_separator"]?>","precision":2,"allowNegative":false};			
-			jQuery("#w2"+n+"-disp").maskMoney(maskMoney_x);
-			var val = parseFloat(jQuery("#w2"+n).val());			
-			jQuery("#w2"+n+"-disp").maskMoney("mask", val);
-			jQuery("#w2"+n+"-disp").on("change", function () {
-				 var numDecimal = jQuery("#w2"+n+"-disp").maskMoney("unmasked")[0];				 
-				jQuery("#w2"+n).val(numDecimal);				
-				jQuery("#w2"+n).trigger("change");
-			});								
 						
 			if (typeof journal !== "undefined")
 			{
@@ -263,8 +264,7 @@ $module = Yii::$app->getModule('cap');
 				var A = parseFloat($(this).val());
 				
 				var nA = (dA+A > maxA?maxA-dA:A);
-				$(this).val(nA);
-				jQuery("#"+$(this).attr("id")+"-disp").maskMoney("mask", nA);
+				$("#"+$(this).attr("id")+"-disp").val(nA);								
 				
 				dA += nA;
 				//console.log(dA,maxA,A,nA);									
@@ -315,9 +315,7 @@ $module = Yii::$app->getModule('cap');
 		{
 			var j = journals[i];								
 			renderFormDetails(j["type"] == 0?"debet":"credit",j["amount"],j);
-		}
-				
-		
+		}											
 		
 <?php $this->endBlock(); ?>
 

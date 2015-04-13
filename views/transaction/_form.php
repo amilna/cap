@@ -5,10 +5,11 @@ use yii\widgets\ActiveForm;
 use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
 use yii\jui\AutoComplete;
-use kartik\money\MaskMoney;
+//use kartik\money\MaskMoney;
 use kartik\widgets\Select2;
 use kartik\widgets\SwitchInput;
 use kartik\datetime\DateTimePicker;
+use amilna\yap\Money;
 
 /* @var $this yii\web\View */
 /* @var $model amilna\cap\models\Transaction */
@@ -189,6 +190,7 @@ use kartik\datetime\DateTimePicker;
 		<div class="col-sm-3">        			
     <?php		
 		$module = Yii::$app->getModule('cap');
+		/*
 		echo $form->field($model, 'total')->widget(MaskMoney::classname(), [								
 				'pluginOptions' => [
 					'prefix' => $module->currency["symbol"],
@@ -199,13 +201,21 @@ use kartik\datetime\DateTimePicker;
 					'allowNegative' => false
 				],
 				'options'=>['style'=>'text-align:right']
-			]);
-			
-		/*echo MaskedInput::widget([
-						'name'=>"Transaction[credits][0][subtotal]",
-						'mask' => '9[99].',
-						'clientOptions'=>['repeat'=>3,'greedy'=>true]						
-					]);	*/	
+			]);			
+		*/	
+		echo $form->field($model, 'total')->widget(Money::classname(), [			
+			"pluginOptions"=>	[
+				 "radixPoint"=>$module->currency["decimal_separator"], 
+				 "groupSeparator"=> $module->currency["thousand_separator"], 
+				 "digits"=> 2,
+				 "autoGroup"=> true,
+				 "prefix"=> $module->currency["symbol"]
+			 ],
+			 "pluginEvents"=>[
+				"change"=>"function(){console.log('tes');}",
+			 ],
+			"options"=>['placeholder' => Yii::t('app','0,00')]
+		]);
 			
 	?>						
 		</div>		
@@ -258,7 +268,7 @@ use kartik\datetime\DateTimePicker;
 			<div class="col-xs-5" style="padding-right:0px;">  					
 				<div class="input-group">
 					<div class="input-group-addon"><?= Yii::t('app','Qty')?></div>
-					<input type="text" id="w1:N-disp" class="form-control transaction-:T-quantity-disp" name="w1:N-disp" style="text-align:right;">
+					<input type="text" id="w1:N-disp" class="form-control transaction-:T-quantity-disp yap-money" name="w1:N-disp" style="text-align:right;">
 					<input type="hidden" id="w1:N" name="Transaction[:T][:N][quantity]" data-krajee-maskMoney="maskMoney_x">					
 					<!--<input type="number" id="w1:N" class="form-control" name="Transaction[:T][:N][quantity]" step="0.1" min="0.1" style="text-align:right;padding-right:10px">-->
 				</div>	
@@ -266,7 +276,7 @@ use kartik\datetime\DateTimePicker;
 			<div class="col-xs-7" style="padding-left:0px;">  					
 				<div class="input-group">
 					<div class="input-group-addon"><?= Yii::t('app','Rp')?></div>
-					<input type="text" id="w2:N-disp" class="form-control transaction-:T-amount-disp" name="w2:N-disp" style="text-align:right">
+					<input type="text" id="w2:N-disp" class="form-control transaction-:T-amount-disp yap-money" name="w2:N-disp" style="text-align:right">
 					<input type="hidden" id="w2:N" class="transaction-:T-amount" name="Transaction[:T][:N][amount]" data-krajee-maskMoney="maskMoney_x">
 					<input type="hidden" id="w4:N" class="transaction-:T-type" name="Transaction[:T][:N][type]" >
 				</div>	
