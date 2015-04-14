@@ -212,7 +212,10 @@ use amilna\yap\Money;
 				 "prefix"=> $module->currency["symbol"]
 			 ],
 			 "pluginEvents"=>[
-				"change"=>"function(){console.log('tes');}",
+				"change"=>"function(){
+						accountAmount('debet',true);
+						accountAmount('credit',true);
+					}",
 			 ],
 			"options"=>['placeholder' => Yii::t('app','0,00')]
 		]);

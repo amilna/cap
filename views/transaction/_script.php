@@ -184,15 +184,13 @@ $module = Yii::$app->getModule('cap');
 			$("#w1"+n+"-disp").change(function(){
 				var val = parseFloat($("#w1"+n+"-disp").val().replace(yapMoney["prefix"],"").replace(/\<?= $module->currency["thousand_separator"]?>/g,"").replace(/\<?= $module->currency["decimal_separator"]?>/g,"."));
 				val = (isNaN(val)?0:val);				
-				$("#w1"+n).val(val);
-				$("#w1"+n).trigger("change");								
+				$("#w1"+n).val(val);						
 			});	 												
 			
 			$("#w1"+n+"-disp").val(1.0);
 			if (typeof journal !== "undefined")
 			{
-				$("#w1"+n+"-disp").val(typeof journal["quantity"] !== "undefined"?journal["quantity"]:1);
-				console.log(journal["quantity"]);
+				$("#w1"+n+"-disp").val(typeof journal["quantity"] !== "undefined"?journal["quantity"]:1);				
 			}
 			
 			var total = (typeof defval !== "undefined"?defval:$("#transaction-total").val());
@@ -202,8 +200,8 @@ $module = Yii::$app->getModule('cap');
 			$("#w2"+n+"-disp").change(function(){				
 				var val = parseFloat($("#w2"+n+"-disp").val().replace(yapMoney["prefix"],"").replace(/\<?= $module->currency["thousand_separator"]?>/g,"").replace(/\<?= $module->currency["decimal_separator"]?>/g,"."));
 				val = (isNaN(val)?0:val);						
-				$("#w2"+n).val(val);								
-				$("#w2"+n).trigger("change");
+				$("#w2"+n).val(val);				
+				accountAmount(increaseon);	
 			});	
 			
 			$("#w2"+n+"-disp").val(total);
@@ -218,22 +216,7 @@ $module = Yii::$app->getModule('cap');
 				$("#w3"+n+"").val(typeof journal["remarks"] !== "undefined"?journal["remarks"]:null);
 			}
 			
-			$("#w4"+n+"").val(increaseon == "debet"?0:1);			
-			
-			$("#transaction-total,.transaction-debet-amount,.transaction-credit-amount").unbind("change");																
-			
-			$(".transaction-debet-amount").bind("change",function(){
-				accountAmount("debet");								
-			});
-			
-			$(".transaction-credit-amount").bind("change",function(){
-				accountAmount("credit");								
-			});	
-			
-			$("#transaction-total").bind("change",function(){
-				accountAmount("debet",true);
-				accountAmount("credit",true);
-			});								
+			$("#w4"+n+"").val(increaseon == "debet"?0:1);									
 						
 			var tipe = $("#transaction-type").val();			
 			filterOptions(tipe,"debet");
@@ -304,12 +287,7 @@ $module = Yii::$app->getModule('cap');
 			
 			var tipe = $("#transaction-type").val();			
 			filterOptions(tipe,increaseon);			
-		}
-		
-		$("#transaction-total").bind("change",function(){
-			accountAmount("debet",true);
-			accountAmount("credit",true);
-		});
+		}				
 		
 		for (i in journals)
 		{
