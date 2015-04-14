@@ -187,10 +187,10 @@ $module = Yii::$app->getModule('cap');
 				$("#w1"+n).val(val);						
 			});	 												
 			
-			$("#w1"+n+"-disp").val(1.0);
+			$("#w1"+n+"-disp,#w1"+n+"").val(1.0);
 			if (typeof journal !== "undefined")
 			{
-				$("#w1"+n+"-disp").val(typeof journal["quantity"] !== "undefined"?journal["quantity"]:1);				
+				$("#w1"+n+"-disp,#w1"+n+"").val(typeof journal["quantity"] !== "undefined"?journal["quantity"]:1);				
 			}
 			
 			var total = (typeof defval !== "undefined"?defval:$("#transaction-total").val());
@@ -201,15 +201,18 @@ $module = Yii::$app->getModule('cap');
 				var val = parseFloat($("#w2"+n+"-disp").val().replace(yapMoney["prefix"],"").replace(/\<?= $module->currency["thousand_separator"]?>/g,"").replace(/\<?= $module->currency["decimal_separator"]?>/g,"."));
 				val = (isNaN(val)?0:val);						
 				$("#w2"+n).val(val);				
-				accountAmount(increaseon);	
+				$("#w2"+n).trigger("change");				
 			});	
 			
-			$("#w2"+n+"-disp").val(total);
+			$("#w2"+n).change(function(){										
+				accountAmount(increaseon);	
+			});
+			
+			$("#w2"+n+"-disp,#w2"+n+"").val(total);
 			if (typeof journal !== "undefined")
 			{
-				$("#w2"+n+"-disp").val(typeof journal["amount"] !== "undefined"?journal["amount"]:total);
-			}
-			
+				$("#w2"+n+"-disp,#w2"+n+"").val(typeof journal["amount"] !== "undefined"?journal["amount"]:total);
+			}						
 						
 			if (typeof journal !== "undefined")
 			{
@@ -224,7 +227,8 @@ $module = Yii::$app->getModule('cap');
 		}	
 		
 		function accountAmount(increaseon,istotal)
-		{			
+		{						
+			
 			var maxA= parseFloat($("#transaction-total").val());
 			var dA = 0;
 			var lA = 0;
@@ -233,6 +237,7 @@ $module = Yii::$app->getModule('cap');
 			var dId = "";
 			
 			$(".transaction-"+increaseon+"-amount").each(function(){
+								
 				
 				if (typeof istotal !== "undefined")
 				{
@@ -241,16 +246,15 @@ $module = Yii::$app->getModule('cap');
 						var num = $(this).attr("data-ratio")*maxA;
 						var dval = Math.round(num * 100) / 100;
 						$(this).val(dval);	
-					}					
+					}						
 				}				
 				
-				var A = parseFloat($(this).val());
+				var A = parseFloat($(this).val());								
 				
 				var nA = (dA+A > maxA?maxA-dA:A);
 				$("#"+$(this).attr("id")+"-disp").val(nA);								
 				
-				dA += nA;
-				//console.log(dA,maxA,A,nA);									
+				dA += nA;				
 				
 				lA = nA;
 				lD = $(this).attr("id");
