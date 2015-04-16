@@ -225,7 +225,38 @@ class AccountCode extends \yii\db\ActiveRecord
 				
 		parent::afterSave($insert, $changedAttributes);
 	}
-	 
+	
+	public function re_arrange()
+	{		
+		$this->id_left = -1;
+		$this->id_right = 1;
+		$this->id_level = 0;
+		
+		$this->save();
+		
+		if ($this->parent_id == null)
+		{
+			if (!$this->isRoot())
+			{
+				$this->makeRoot();				
+			}
+			
+		}
+		else
+		{
+			$parent = $this->findOne($this->parent_id);
+			$this->prependTo($parent);													
+		}
+						
+		$childs = $this->AccountCodes;		
+		$res = true;			
+		foreach ($childs as $m)
+		{										
+			$res = $m->re_arrange();			
+		}						
+		
+		return ($res == false?false:$res);
+	}		 
 	
 
 }

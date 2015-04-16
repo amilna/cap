@@ -3,6 +3,7 @@
 namespace amilna\cap\controllers;
 
 use Yii;
+use amilna\cap\models\Transaction;
 use amilna\cap\models\Journal;
 use amilna\cap\models\JournalSearch;
 use yii\web\Controller;
@@ -38,7 +39,7 @@ class JournalController extends Controller
 		$query = $dataProvider->query;        
 		if (!isset($req["sort"]))
         {
-			$query->orderBy("{{%cap_transaction}}.time desc");
+			$query->orderBy(Transaction::tableName().".time desc");
 		}
 		
         return $this->render('index', [

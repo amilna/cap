@@ -113,7 +113,29 @@ class AccountController extends Controller
     
     public function actionRe_arrange()
     {
-		return $this->redirect(['index']);					
+		$transaction = Yii::$app->db->beginTransaction();
+		try {										
+			$account = AccountCodeSearch::find()->andWhere("parent_id is null")->orderBy("id")->all();
+			$res = true;
+			foreach ($account as $m)
+			{
+				$res = $m->re_arrange();						 													
+			}
+			
+			if ($res)
+			{
+				$transaction->commit();
+				return $this->redirect(['index']);	
+			}
+			else
+			{
+				$transaction->rollBack();
+				die('Error!');
+			}
+		} catch (Exception $e) {
+			$transaction->rollBack();
+			die('Error!');
+		}
 		/*
 		$transaction = Yii::$app->db->beginTransaction();
 		try {							
