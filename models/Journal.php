@@ -21,13 +21,16 @@ use Yii;
  */
 class Journal extends \yii\db\ActiveRecord
 {
+    public $dynTableName = '{{%cap_journal}}';    
+    
     /**
      * @inheritdoc
      */
     public static function tableName()
-    {
-        return '{{%cap_journal}}';
-    }		
+    {        
+        $mod = new Journal();             
+        return $mod->dynTableName;
+    }
 	
     /**
      * @inheritdoc

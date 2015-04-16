@@ -169,33 +169,33 @@ class JournalSearch extends Journal
         ]);
         
         $dataProvider->sort->attributes['time'] = [			
-			'asc' => ['{{%cap_transaction}}.time' => SORT_ASC],
-			'desc' => ['{{%cap_transaction}}.time' => SORT_DESC],
+			'asc' => [Transaction::tableName().'.time' => SORT_ASC],
+			'desc' => [Transaction::tableName().'.time' => SORT_DESC],
 		];
 		
 		$dataProvider->sort->attributes['title'] = [			
-			'asc' => ['{{%cap_transaction}}.title' => SORT_ASC],
-			'desc' => ['{{%cap_transaction}}.title' => SORT_DESC],
+			'asc' => [Transaction::tableName().'.title' => SORT_ASC],
+			'desc' => [Transaction::tableName().'.title' => SORT_DESC],
 		];
         
         $dataProvider->sort->attributes['subject'] = [			
-			'asc' => ['{{%cap_transaction}}.subject' => SORT_ASC],
-			'desc' => ['{{%cap_transaction}}.subject' => SORT_DESC],
+			'asc' => [Transaction::tableName().'.subject' => SORT_ASC],
+			'desc' => [Transaction::tableName().'.subject' => SORT_DESC],
 		];
 		
 		$dataProvider->sort->attributes['tags'] = [			
-			'asc' => ['{{%cap_transaction}}.tags' => SORT_ASC],
-			'desc' => ['{{%cap_transaction}}.tags' => SORT_DESC],
+			'asc' => [Transaction::tableName().'.tags' => SORT_ASC],
+			'desc' => [Transaction::tableName().'.tags' => SORT_DESC],
 		];
 		
 		$dataProvider->sort->attributes['transactionRemarks'] = [			
-			'asc' => ['{{%cap_transaction}}.remarks' => SORT_ASC],
-			'desc' => ['{{%cap_transaction}}.remarks' => SORT_DESC],
+			'asc' => [Transaction::tableName().'.remarks' => SORT_ASC],
+			'desc' => [Transaction::tableName().'.remarks' => SORT_DESC],
 		];
 		
 		$dataProvider->sort->attributes['accountName'] = [			
-			'asc' => ['{{%cap_account}}.code' => SORT_ASC],
-			'desc' => ['{{%cap_account}}.code' => SORT_DESC],
+			'asc' => [AccountCode::tableName().'.code' => SORT_ASC],
+			'desc' => [AccountCode::tableName().'.code' => SORT_DESC],
 		];
 
         if (!($this->load($params) && $this->validate())) {
@@ -218,25 +218,25 @@ class JournalSearch extends Journal
 			$query->andFilterWhere($p);
 		}		
 		
-		$params = self::queryTime([['time','{{%cap_transaction}}']]);				
+		$params = self::queryTime([['time',Transaction::tableName()]]);				
 		foreach ($params as	$p)
 		{		
 			$query->andFilterWhere($p);
 		}
 		
 		$params = self::queryString([
-			['remarks','{{%cap_journal}}'],
-			['title','{{%cap_transaction}}'],
-			['subject','{{%cap_transaction}}'],
-			['tags','{{%cap_transaction}}'],			
+			['remarks',Journal::tableName()],
+			['title',Transaction::tableName()],
+			['subject',Transaction::tableName()],
+			['tags',Transaction::tableName()],			
 		]);						
 		foreach ($params as	$p)
 		{		
 			$query->andFilterWhere($p);
 		}	
 			
-        $query->andFilterWhere(['like', 'lower({{%cap_transaction}}.remarks)', strtolower($this->transactionRemarks)])
-			->andFilterWhere(['like', "lower(concat({{%cap_account}}.code,' - ',{{%cap_account}}.name))", strtolower($this->accountName)]);
+        $query->andFilterWhere(['like', 'lower('.Transaction::tableName().'.remarks)', strtolower($this->transactionRemarks)])
+			->andFilterWhere(['like', "lower(concat(".AccountCode::tableName().".code,' - ',".AccountCode::tableName().".name))", strtolower($this->accountName)]);
 
         return $dataProvider;
     }

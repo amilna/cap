@@ -13,12 +13,15 @@ use Yii;
  */
 class Template extends \yii\db\ActiveRecord
 {
+    public $dynTableName = '{{%cap_template}}';    
+    
     /**
      * @inheritdoc
      */
     public static function tableName()
-    {
-        return '{{%cap_template}}';
+    {        
+        $mod = new Template();        
+        return $mod->dynTableName;
     }
 
     /**

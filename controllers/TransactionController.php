@@ -85,7 +85,7 @@ class TransactionController extends Controller
 			return \yii\helpers\Json::encode($model);	
 		}
 		else
-		{
+		{			
 			return $this->render('index', [
 				'searchModel' => $searchModel,
 				'dataProvider' => $dataProvider,

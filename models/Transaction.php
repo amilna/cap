@@ -23,12 +23,15 @@ use amilna\cap\models\TransactionSearch;
  */
 class Transaction extends \yii\db\ActiveRecord
 {
+    public $dynTableName = '{{%cap_transaction}}';    
+    
     /**
      * @inheritdoc
      */
     public static function tableName()
-    {
-        return '{{%cap_transaction}}';
+    {        
+        $mod = new Transaction();        
+        return $mod->dynTableName;
     }		
 	
     /**
@@ -163,7 +166,7 @@ class Transaction extends \yii\db\ActiveRecord
 	{
 		$v = 0;
 		foreach ($this->journals as $j)
-		{
+		{			
 			if ($j->account->exchangable && $j->isdel == 0) {
 				if ($j->account->increaseon == 0 && $j->type == 0)
 				{

@@ -47,34 +47,17 @@ class AccountCode extends \yii\db\ActiveRecord
         return new AccountCodeQuery(get_called_class());
     }
     
-    
+    public $dynTableName = '{{%cap_account}}';    
     
     /**
      * @inheritdoc
      */
     public static function tableName()
-    {
-        return '{{%cap_account}}';
-    }
-	
-	
-	public function init()
-	{
-		$jml = $this->db->createCommand("SELECT count(1)
-			FROM ".AccountCode::tableName()."
-			WHERE isdel = 0
-			")->queryScalar();
-			
-		if ($jml == 0)
-		{
-			$res = $this->db->createCommand("INSERT 
-				INTO ".AccountCode::tableName()."
-				(code,name,increaseon,id_left,id_right,id_level)
-				VALUES (0,'".Yii::t("app","Base Account")."',0,1,2,1)
-				")->execute();								
-		}
-		
-	}	
+    {        
+        $mod = new AccountCode();               
+        return $mod->dynTableName;
+    }					
+	 	
 	
     /**
      * @inheritdoc

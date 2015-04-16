@@ -141,6 +141,7 @@ class TransactionSearch extends Transaction
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
         ]);
+        
 
         if (!($this->load($params) && $this->validate())) {
             return $dataProvider;

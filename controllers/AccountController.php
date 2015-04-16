@@ -241,7 +241,17 @@ class AccountController extends Controller
 				
 				if ($model->parent_id == null && $model->code != 0)
 				{
-					$parent = AccountCode::findOne(["code"=>0]);	
+					$parent = AccountCode::findOne(["code"=>0]);
+					if (!$parent)
+					{						
+						$res = Yii::$app->db->createCommand("INSERT 
+							INTO ".AccountCode::tableName()."
+							(code,name,increaseon,id_left,id_right,id_level)
+							VALUES (0,'".Yii::t("app","Base Account")."',0,1,2,1)
+							")->execute();
+						
+						$parent = AccountCode::findOne(["code"=>0]);						
+					}	
 					$model->parent_id = $parent->id;
 				}
 				else
@@ -328,15 +338,18 @@ class AccountController extends Controller
     {
         $model = $this->findModel($id);
         
-        $transaction = Yii::$app->db->beginTransaction();
-		try {				
-			//$model->delete();			
-			$model->isdel = 1;			
-			$model->save();
-			
-			$transaction->commit();		
-		} catch (Exception $e) {
-			$transaction->rollBack();
+        if ($model->code != 0)
+        {        
+			$transaction = Yii::$app->db->beginTransaction();
+			try {				
+				//$model->delete();			
+				$model->isdel = 1;			
+				$model->save();
+				
+				$transaction->commit();		
+			} catch (Exception $e) {
+				$transaction->rollBack();
+			}
 		}
         
         return $this->redirect(['index']);
