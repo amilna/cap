@@ -230,7 +230,7 @@ $module = Yii::$app->getModule('cap');
 		function accountAmount(increaseon,istotal)
 		{						
 			
-			var maxA= parseFloat($("#transaction-total").val());
+			var maxA= $("#transaction-total").val();
 			var dA = 0;
 			var lA = 0;
 			var lD = false;
@@ -250,9 +250,9 @@ $module = Yii::$app->getModule('cap');
 					}						
 				}				
 				
-				var A = parseFloat($(this).val()).toFixed(capprec);								
+				var A = parseFloat($(this).val());																
 				
-				var nA = (dA+A > maxA?maxA-dA:A);
+				var nA = ((dA+A) > maxA?(maxA-dA):A);
 				$("#"+$(this).attr("id")+"-disp").val(nA);								
 				
 				dA += nA;				

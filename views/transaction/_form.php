@@ -131,7 +131,7 @@ use amilna\yap\Money;
 										if (xhr != null)
 										{											
 											var t = JSON.parse(xhr.json);											
-											var total = parseFloat($("#transaction-total").val()).toFixed(capprec);
+											var total = parseFloat($("#transaction-total").val());
 																																	
 											for (k in t)
 											{
@@ -148,7 +148,7 @@ use amilna\yap\Money;
 													$("#transaction-"+k).val(t[k]);
 												}
 											}
-											total = parseFloat($("#transaction-total").val()).toFixed(capprec);
+											total = parseFloat($("#transaction-total").val());
 											
 											var select2_x = {"allowClear":true,"width":"resolve"};
 											jQuery.when(jQuery("#transaction-type").select2(select2_x)).done(initSelect2Loading("transaction-type"));
