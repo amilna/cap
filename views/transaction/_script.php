@@ -8,6 +8,7 @@ $module = Yii::$app->getModule('cap');
 <?php $this->beginBlock('JS_END') ?>
 		var accounts = <?= json_encode($model->accounts()) ?>;
 		var journals = <?= \yii\helpers\Json::encode($model->isNewRecord?$model->id:$model->journals) ?>;						
+		var capprec = <?= $module->currency["precision"] ?>;
 		
 		function filterOptions(tipe,increaseon)
 		{											
@@ -193,7 +194,7 @@ $module = Yii::$app->getModule('cap');
 				$("#w1"+n+"-disp,#w1"+n+"").val(typeof journal["quantity"] !== "undefined"?journal["quantity"]:1);				
 			}
 			
-			var total = (typeof defval !== "undefined"?defval:$("#transaction-total").val());
+			var total = (typeof defval !== "undefined"?defval:$("#transaction-total").val());			
 			
 			var yapMoney = {"radixPoint":"<?= $module->currency["decimal_separator"]?>","groupSeparator":"<?= $module->currency["thousand_separator"]?>", "digits": 2,"autoGroup": true,"prefix":""};
 			$("#w2"+n+"-disp").inputmask("decimal",yapMoney);
@@ -244,12 +245,12 @@ $module = Yii::$app->getModule('cap');
 					if (typeof $(this).attr("data-ratio") !== "undefined")
 					{
 						var num = $(this).attr("data-ratio")*maxA;
-						var dval = Math.round(num * 100) / 100;
+						var dval = (Math.round(num * 100) / 100).toFixed(capprec);
 						$(this).val(dval);	
 					}						
 				}				
 				
-				var A = parseFloat($(this).val());								
+				var A = parseFloat($(this).val()).toFixed(capprec);								
 				
 				var nA = (dA+A > maxA?maxA-dA:A);
 				$("#"+$(this).attr("id")+"-disp").val(nA);								

@@ -129,15 +129,26 @@ use amilna\yap\Money;
 									success: function (xhr) {										
 										xhr = JSON.parse(xhr);									
 										if (xhr != null)
-										{
-											//console.log(event,ui,xhr);								
-											var t = JSON.parse(xhr.json);
-											var total = $("#transaction-total").val();																						
-											
+										{											
+											var t = JSON.parse(xhr.json);											
+											var total = parseFloat($("#transaction-total").val()).toFixed(capprec);
+																																	
 											for (k in t)
 											{
-												$("#transaction-"+k).val(t[k]);
+												if (k == "total")
+												{
+													if (total == 0)
+													{
+														$("#transaction-"+k).val(t[k]);
+														$("#transaction-"+k+"-disp").val(t[k]);
+													}
+												}
+												else
+												{
+													$("#transaction-"+k).val(t[k]);
+												}
 											}
+											total = parseFloat($("#transaction-total").val()).toFixed(capprec);
 											
 											var select2_x = {"allowClear":true,"width":"resolve"};
 											jQuery.when(jQuery("#transaction-type").select2(select2_x)).done(initSelect2Loading("transaction-type"));
@@ -156,7 +167,7 @@ use amilna\yap\Money;
 											for (i in t.journals)
 											{
 												var j = t.journals[i];															
-												j["amount"] = (j["ratio"]*total == 0?null:j["ratio"]*total);												
+												j["amount"] = (j["ratio"]*total == 0?0:(j["ratio"]*total).toFixed(capprec));												
 												renderFormDetails(j["type"] == 0?"debet":"credit",j["amount"],j);
 												
 												var n = 0;
@@ -170,6 +181,7 @@ use amilna\yap\Money;
 												
 												$("#w2"+n).attr("data-ratio",j["ratio"]);
 											}
+											
 											
 										}										
 									},
