@@ -156,6 +156,12 @@ use amilna\yap\Money;
 												initSelect2DropStyle("#transaction-type");				
 											});
 											
+											var select2_x = {"tags":true,"width":"resolve"};
+											jQuery.when(jQuery("#transaction-tags").select2(select2_x)).done(initSelect2Loading("transaction-tags"));
+											jQuery("#transaction-tags").on("select2-open", function(){
+												initSelect2DropStyle("#transaction-tags");				
+											});
+											
 											$(".detail").each(function(n,d){
 												if ($(d).attr("id") != "detail_:N")
 												{

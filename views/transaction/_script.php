@@ -259,11 +259,11 @@ $module = Yii::$app->getModule('cap');
 				
 				lA = nA;
 				lD = $(this).attr("id");
-				
-				if (A == 0)
-				{
+								
+				if (A == 0 || nA == 0)
+				{					
 					var id = $(this).attr("id").replace("w2","");
-					dId += (dId == ""?"#":",#")+"detail_"+id;															
+					dId += (dId == ""?"#":",#")+"detail_"+id;																				
 				}								
 			});	
 			

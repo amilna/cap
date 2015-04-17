@@ -114,16 +114,40 @@ class TransactionController extends Controller
 		}
     }
     
-    public function actionTemplate($id = false,$term = false)
+    public function actionTemplate($id = false,$term = false,$arraymap=false)
     {                        
         $res = [];
         if ($term)
         {
 			$model = Template::find()->select(["title"])->where(["like","lower(title)",strtolower($term)])->asArray()->all();			
+						
 			foreach ($model as $m)
 			{
-				$res[] = $m["title"];	
-			}			
+				if ($arraymap)
+				{
+					$map = explode(",",$arraymap);
+					if (count($map) == 1)
+					{
+						$obj = (isset($m[$arraymap])?$m[$arraymap]:null);
+					}
+					else
+					{
+						$obj = [];					
+						foreach ($map as $a)
+						{
+							$k = explode(":",$a);						
+							$v = (count($k) > 1?$k[1]:$k[0]);
+							$obj[$k[0]] = ($v == "Obj"?json_encode($m):(isset($m[$v])?$m[$v]:null));
+						}
+					}
+					$res[] = $obj;
+				}				
+				else
+				{
+					$res[] = $m["title"];	
+				}	
+			}
+					
 		}
 		elseif ($id)
 		{
