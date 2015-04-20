@@ -54,7 +54,7 @@ class JournalSearch extends Journal
             'title' => Yii::t('app', 'Title'),                                    
             'subject' => Yii::t('app', 'Subject'),                                    
             'tags' => Yii::t('app', 'Tags'),                                    
-            'transactionRemarks' => Yii::t('app', 'Transaction')." ".Yii::t('app', 'Remarks'),                                    
+            'transactionRemarks' => Yii::t('app', 'Remarks')." (".Yii::t('app', 'Transaction').")",                                    
             'accountName' => Yii::t('app', 'Account'),                                    
             'code' => Yii::t('app', 'Account'), 
             'amount'=> Yii::t('app', 'Amount')." (".$module->currency['symbol'].")",//'Debet | Credit', //'Debet__________Credit'
