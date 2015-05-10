@@ -62,6 +62,11 @@ class Journal extends \yii\db\ActiveRecord
         ];
     }
 	
+	public function getQty()
+    {
+        return (($this->type == $this->account->increaseon?1:(-1))*$this->quantity);
+    }
+	
 	public function getDebet()
     {
         return $this->type == 0?$this->amount:0;

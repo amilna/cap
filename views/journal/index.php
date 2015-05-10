@@ -136,11 +136,20 @@ $tra = new Transaction();
 				'attribute' => 'quantity',
 				'value'=>function($data){	
 					$module = Yii::$app->getModule('cap');									
-					return number_format($data->quantity,2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]);
+					return number_format($data->qty,2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]);
 				},				
 				'hAlign'=>'right',
-				'pageSummary'=>true,
-				'pageSummaryFunc'=>'sum'
+				'pageSummary'=>function ($summary, $data, $widget) { 					
+					$module = Yii::$app->getModule('cap');
+					$r = 0;
+					foreach($data as $d)
+					{
+						$r += floatval(str_replace($module->currency["thousand_separator"],"",$d));
+					}
+					return number_format($r,2,$module->currency["decimal_separator"],$module->currency["thousand_separator"]);
+				},
+				//'pageSummary'=>true,
+				//'pageSummaryFunc'=>'sum'
 				
 			],
 			/*
