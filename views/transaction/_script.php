@@ -124,7 +124,7 @@ $module = Yii::$app->getModule('cap');
 								p.val(false);	
 								var n = p.attr("id").replace("w0","");
 								
-								var select2_x = {"allowClear":true,"width":"resolve"};
+								var select2_x = {"allowClear":true,"width":"resolve","theme":"krajee"};
 								jQuery.when(jQuery("#w0"+n).select2(select2_x)).done(initSelect2Loading("w0"+n));
 								jQuery("#w0"+n).on("select2-open", function(){
 									initSelect2DropStyle("w0"+n);				
@@ -172,7 +172,7 @@ $module = Yii::$app->getModule('cap');
 				filterOptions(tipe,"credit");															
 			});
 			
-			var select2_x = {"allowClear":true,"width":"resolve"};			
+			var select2_x = {"allowClear":true,"width":"resolve","theme":"krajee"};			
 			jQuery("#w0"+n).prepend("<option val></option>");
 			jQuery.when(jQuery("#w0"+n).select2(select2_x)).done(initSelect2Loading("w0"+n));
 			jQuery("#w0"+n).on("select2-open", function(){

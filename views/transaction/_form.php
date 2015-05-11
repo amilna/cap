@@ -150,13 +150,13 @@ use amilna\yap\Money;
 											}
 											total = parseFloat($("#transaction-total").val());
 											
-											var select2_x = {"allowClear":true,"width":"resolve"};
+											var select2_x = {"allowClear":true,"width":"resolve","theme":"krajee"};
 											jQuery.when(jQuery("#transaction-type").select2(select2_x)).done(initSelect2Loading("transaction-type"));
 											jQuery("#transaction-type").on("select2-open", function(){
 												initSelect2DropStyle("#transaction-type");				
 											});
 											
-											var select2_x = {"tags":true,"width":"resolve"};
+											var select2_x = {"tags":true,"width":"resolve","theme":"krajee"};
 											jQuery.when(jQuery("#transaction-tags").select2(select2_x)).done(initSelect2Loading("transaction-tags"));
 											jQuery("#transaction-tags").on("select2-open", function(){
 												initSelect2DropStyle("#transaction-tags");				
