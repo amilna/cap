@@ -107,8 +107,10 @@ use amilna\yap\Money;
 		'options' => [
 			'placeholder' => Yii::t('app','Put additional tags, usefull for Helper Ledger ...'),
 		],
+		'data'=>$model->getTags(),
 		'pluginOptions' => [
-			'tags' => $model->getTags(),
+			'tags' => true,
+			'tokenSeparators'=>[',',' '],
 		],
 	]) ?>
 			
@@ -122,15 +124,16 @@ use amilna\yap\Money;
 				'source' => Yii::$app->urlManager->createUrl("//cap/transaction/template"),					
 			],
 			'clientEvents' => [				
-				'select' => 'function(event, ui) {																			
-								var id = ui.item.value;
+				'select' => 'function(event, ui) {																											
+								var id = ui.item.value;								
 								var url = "'.Yii::$app->urlManager->createUrl('//cap/transaction/template').'?id="+id;
 								$.ajax(url, {
 									success: function (xhr) {										
 										xhr = JSON.parse(xhr);									
 										if (xhr != null)
 										{											
-											var t = JSON.parse(xhr.json);											
+											var t = JSON.parse(xhr.json);							
+											
 											var total = parseFloat($("#transaction-total").val());
 																																	
 											for (k in t)
@@ -142,7 +145,7 @@ use amilna\yap\Money;
 														$("#transaction-"+k).val(t[k]);
 														$("#transaction-"+k+"-disp").val(t[k]);
 													}
-												}
+												}												
 												else
 												{
 													$("#transaction-"+k).val(t[k]);

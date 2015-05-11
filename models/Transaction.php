@@ -155,7 +155,7 @@ class Transaction extends \yii\db\ActiveRecord
 			{	
 				if (!in_array($t,$tags))
 				{
-					array_push($tags,$t);	
+					$tags[$t] = $t;
 				}
 			}	
 		}

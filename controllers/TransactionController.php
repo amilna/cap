@@ -114,7 +114,7 @@ class TransactionController extends Controller
 		}
     }
     
-    public function actionTemplate($id = false,$term = false,$arraymap=false)
+    public function actionTemplate($id = false,$term = false,$arraymap=false,$results = false)
     {                        
         $res = [];
         if ($term)
@@ -153,7 +153,15 @@ class TransactionController extends Controller
 		{
 			$res = Template::find()->where("title = :t",["t"=>$id])->one();					
 		}
-		return \yii\helpers\Json::encode($res);			
+		
+		if ($results)
+		{
+			return \yii\helpers\Json::encode(["results"=>$res]);			
+		}
+		else
+		{
+			return \yii\helpers\Json::encode($res);			
+		}	
     }
     
     public function actionDetail_form($increaseon,$usedaccounts = "")    
@@ -198,8 +206,14 @@ class TransactionController extends Controller
 				{
 					return $this->redirect(['index']);	
 				}
+				
+				if (is_array($post['Transaction']['tags']))
+				{
+					$post['Transaction']['tags'] = implode(",",$post['Transaction']['tags']);
+				}
 						
-				$model->load($post);						
+				$model->load($post);														
+				
 				$model->total = ($model->total == null?0:$model->total);
 				$transaction = Yii::$app->db->beginTransaction();
 				try {				
@@ -254,6 +268,8 @@ class TransactionController extends Controller
     {
         $model = $this->findModel($id);
 		
+		$model->tags = !empty($model->tags)?explode(",",$model->tags):[];
+		
         if (Yii::$app->request->post()) {						
 			$post = Yii::$app->request->post();
 			$debet = (isset($post['Transaction']['debet'])?$post['Transaction']['debet']:[]);
@@ -271,6 +287,11 @@ class TransactionController extends Controller
 				if ($istemplate)
 				{
 					return $this->redirect(['index']);	
+				}
+				
+				if (is_array($post['Transaction']['tags']))
+				{
+					$post['Transaction']['tags'] = implode(",",$post['Transaction']['tags']);
 				}
 							
 				$model->load($post);				
