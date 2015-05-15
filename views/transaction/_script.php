@@ -10,8 +10,32 @@ $module = Yii::$app->getModule('cap');
 		var journals = <?= \yii\helpers\Json::encode($model->isNewRecord?$model->id:$model->journals) ?>;						
 		var capprec = <?= $module->currency["precision"] ?>;
 		
+		(function($){
+			$.fn.extend({detachOptions: function(o) {
+				var s = this;
+				return s.each(function(){
+					var d = s.data('selectOptions') || [];
+					s.find(o).each(function() {
+						d.push($(this).detach());
+					});
+					s.data('selectOptions', d);
+				});
+			}, attachOptions: function(o) {
+				var s = this;
+				return s.each(function(){
+					var d = s.data('selectOptions') || [];					
+					for (var i in d) {						
+						s.append(d[i]);						
+					}
+				});
+			}});   
+
+		})(jQuery);
+
+		
 		function filterOptions(tipe,increaseon)
 		{											
+			
 			var cek = function(a){									
 					/*return ( a["increaseon"] == (increaseon == "debet"?0:1)
 							?true:false);
@@ -82,13 +106,19 @@ $module = Yii::$app->getModule('cap');
 				};
 			}
 			
+			$(".transaction-"+increaseon+"-account").each(function(i,d){
+				var n = $(d).attr("id").replace("w0","");				
+				//$("#w0"+n).attachOptions();
+			});	
+			
 			var usedaccounts = [];
 			$(".transaction-"+increaseon+"-account option").each(function(i,d){
 				
 				var dval = $(d).val();
 				if ($(d).prop("selected"))
 				{
-					usedaccounts[dval] = true;						
+					usedaccounts[dval] = true;		
+					//console.log(dval,usedaccounts);				
 				}										
 			});			
 			
@@ -108,14 +138,16 @@ $module = Yii::$app->getModule('cap');
 						}											
 						
 						//console.log(usedaccounts);
-						
+						//console.log(a["id"]);
 						if (cek(a) && ((typeof usedaccounts[a["id"]] == "undefined") || isuse) )
 						{
+						//	console.log(a["id"],false);
 							$(d).prop("disabled",false);
-							$(d).attr("class","");
+							$(d).attr("class","show");
 						}
 						else
 						{
+							//console.log($(d),true);
 							$(d).prop("disabled",true);
 							$(d).attr("class","hidden");
 							if ($(d).prop("selected"))
@@ -124,7 +156,9 @@ $module = Yii::$app->getModule('cap');
 								p.val(false);	
 								var n = p.attr("id").replace("w0","");
 								
-								var select2_x = {"allowClear":true,"width":"resolve","theme":"krajee"};
+								//$("#w0"+n).attachOptions();
+										
+								var select2_x = {"allowClear":true,"width":"resolve","theme":"krajee","placeholder":"<?= Yii::t('app','Select an account...') ?>"};
 								jQuery.when(jQuery("#w0"+n).select2(select2_x)).done(initSelect2Loading("w0"+n));
 								jQuery("#w0"+n).on("select2-open", function(){
 									initSelect2DropStyle("w0"+n);				
@@ -137,6 +171,20 @@ $module = Yii::$app->getModule('cap');
 					}
 					
 				}
+			});
+			
+			
+			$(".transaction-"+increaseon+"-account").each(function(i,d){
+				
+				var n = $(d).attr("id").replace("w0","");
+								
+				//$("#w0"+n).detachOptions('.hidden');												
+				
+				var select2_x = {"allowClear":true,"width":"resolve","theme":"krajee","placeholder":"<?= Yii::t('app','Select an account...') ?>"};
+				jQuery.when(jQuery("#w0"+n).select2(select2_x)).done(initSelect2Loading("w0"+n));
+				jQuery("#w0"+n).on("select2-open", function(){
+					initSelect2DropStyle("w0"+n);				
+				});
 			});
 			
 		}
@@ -172,7 +220,7 @@ $module = Yii::$app->getModule('cap');
 				filterOptions(tipe,"credit");															
 			});
 			
-			var select2_x = {"allowClear":true,"width":"resolve","theme":"krajee"};			
+			var select2_x = {"allowClear":true,"width":"resolve","theme":"krajee","placeholder":"<?= Yii::t('app','Select an account...') ?>"};			
 			jQuery("#w0"+n).prepend("<option val></option>");
 			jQuery.when(jQuery("#w0"+n).select2(select2_x)).done(initSelect2Loading("w0"+n));
 			jQuery("#w0"+n).on("select2-open", function(){

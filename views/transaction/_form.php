@@ -61,7 +61,7 @@ use amilna\yap\Money;
 			],
 			'pluginEvents' => [
 				"change" => 'function() { 																						
-								var tipe = $("#transaction-type").val();								
+								var tipe = $("#transaction-type").val();																
 								filterOptions(tipe,"debet");
 								filterOptions(tipe,"credit");
 								
