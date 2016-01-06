@@ -159,10 +159,15 @@ $module = Yii::$app->getModule('cap');
 								//$("#w0"+n).attachOptions();
 										
 								var select2_x = {"allowClear":true,"width":"resolve","theme":"krajee","placeholder":"<?= Yii::t('app','Select an account...') ?>"};
-								jQuery.when(jQuery("#w0"+n).select2(select2_x)).done(initSelect2Loading("w0"+n));
-								jQuery("#w0"+n).on("select2-open", function(){
-									initSelect2DropStyle("w0"+n);				
-								});
+								jQuery.when(jQuery("#w0"+n).select2(select2_x)).done(
+									typeof initSelect2Loading != 'undefined'?initSelect2Loading("w0"+n):initS2Loading("w0"+n)
+								);
+								jQuery("#w0"+n).on("select2-open", function(){						
+									if (typeof initSelect2DropStyle != 'undefined')
+									{
+										initSelect2DropStyle("w0"+n);	
+									}	
+								});												
 								
 								usedaccounts = [];	
 							}
@@ -181,10 +186,15 @@ $module = Yii::$app->getModule('cap');
 				//$("#w0"+n).detachOptions('.hidden');												
 				
 				var select2_x = {"allowClear":true,"width":"resolve","theme":"krajee","placeholder":"<?= Yii::t('app','Select an account...') ?>"};
-				jQuery.when(jQuery("#w0"+n).select2(select2_x)).done(initSelect2Loading("w0"+n));
-				jQuery("#w0"+n).on("select2-open", function(){
-					initSelect2DropStyle("w0"+n);				
-				});
+				jQuery.when(jQuery("#w0"+n).select2(select2_x)).done(
+					typeof initSelect2Loading != 'undefined'?initSelect2Loading("w0"+n):initS2Loading("w0"+n)
+				);
+				jQuery("#w0"+n).on("select2-open", function(){						
+					if (typeof initSelect2DropStyle != 'undefined')
+					{
+						initSelect2DropStyle("w0"+n);	
+					}	
+				});				
 			});
 			
 		}
@@ -222,10 +232,15 @@ $module = Yii::$app->getModule('cap');
 			
 			var select2_x = {"allowClear":true,"width":"resolve","theme":"krajee","placeholder":"<?= Yii::t('app','Select an account...') ?>"};			
 			jQuery("#w0"+n).prepend("<option val></option>");
-			jQuery.when(jQuery("#w0"+n).select2(select2_x)).done(initSelect2Loading("w0"+n));
-			jQuery("#w0"+n).on("select2-open", function(){
-				initSelect2DropStyle("w0"+n);				
-			});						
+			jQuery.when(jQuery("#w0"+n).select2(select2_x)).done(
+				typeof initSelect2Loading != 'undefined'?initSelect2Loading("w0"+n):initS2Loading("w0"+n)
+			);
+			jQuery("#w0"+n).on("select2-open", function(){						
+				if (typeof initSelect2DropStyle != 'undefined')
+				{
+					initSelect2DropStyle("w0"+n);	
+				}	
+			});								
 									
 			
 			var yapMoney = {"radixPoint":"<?= $module->currency["decimal_separator"]?>","groupSeparator":"<?= $module->currency["thousand_separator"]?>", "digits": 2,"autoGroup": true,"prefix":""};

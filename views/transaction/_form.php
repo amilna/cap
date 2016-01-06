@@ -36,7 +36,9 @@ use amilna\yap\Money;
 	<div class="well">
 		<div class="row">		
 			<div class="col-sm-3">
-		<?/*= $form->field($model, 'time')->textInput() */?>
+		<?php
+			/*= $form->field($model, 'time')->textInput() */
+		?>
 		<?= $form->field($model, 'time')->widget(DateTimePicker::classname(), [				
 				'options' => ['placeholder' => 'Select transaction time ...','readonly'=>true],
 				'removeButton'=>false,
